@@ -483,6 +483,99 @@ input[type='radio']:checked::after {
   }
 }
 
+/* Main Navigation Menu */
+.main-app-layout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.main-nav {
+  background-color: var(--card-bg);
+  padding: 1rem 0;
+  box-shadow: var(--shadow-md);
+  border-bottom: 1px solid var(--border-color);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: sticky; /* Or fixed, depending on desired behavior */
+  top: 0;
+  z-index: 1000;
+}
+
+.main-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 2rem; /* Spacing between links */
+}
+
+.main-nav ul li a {
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+
+.main-nav ul li a:hover,
+.main-nav ul li a.active { /* Assuming react-router-dom adds 'active' class */
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.content-area {
+  flex-grow: 1;
+  /* The app-container styles might already handle centering and max-width for content pages */
+  /* If not, add similar max-width and margin: auto here for page content */
+  /* For example: */
+  /* max-width: 800px; */
+  /* margin: 1rem auto; */
+  /* padding: 1rem; */
+  width: 100%; /* Ensure it takes full width within the layout */
+}
+
+/* QuestionnairePage specific styles */
+.questionnaire-actions {
+  display: flex;
+  justify-content: space-between; /* Puts Previous on left, Next/Finish on right */
+  align-items: center;
+  width: 100%; /* Ensure it takes full width of the form-actions container */
+}
+
+.questionnaire-textarea {
+  /* Global textarea styles are applied. Add specific overrides here if needed */
+  min-height: 120px; /* Ensure a decent minimum height */
+  resize: vertical; /* Allow vertical resizing */
+}
+
+.secondary-button {
+  background: var(--primary-light); /* Lighter background */
+  color: var(--primary-color);
+  /* border: 1px solid var(--primary-color); */ /* Optional: border, removing for cleaner look based on submit-button */
+}
+
+.secondary-button:hover {
+  background: var(--border-color); /* Slightly darker on hover */
+  color: var(--primary-color);
+  transform: translateY(-1px); /* Less pronounced hover effect */
+  box-shadow: var(--shadow-sm);
+}
+
+/* Ensure form-actions can accommodate space-between for questionnaire */
+.form-actions.questionnaire-actions {
+    justify-content: space-between;
+}
+.form-actions.questionnaire-actions .submit-button { /* Keep original submit button styling */
+    /* No change needed if .submit-button is already well-defined */
+}
+
+
 @keyframes pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4);
