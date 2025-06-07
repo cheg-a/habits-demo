@@ -8,6 +8,7 @@ import QuestionnairePage from './pages/QuestionnairePage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Default: not logged in
+  
   const [needsQuestionnaire, setNeedsQuestionnaire] = useState(true); // Default: new user needs questionnaire
 
   const handleLoginSuccess = () => {
@@ -23,9 +24,14 @@ function App() {
     <Routes>
       {!isLoggedIn ? (
         <>
+          {/* Временно открыт доступ ко всем маршрутам без логина */}
           <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+          <Route path="/" element={<DailyReportPage />} />
+          <Route path="/weekly-report" element={<WeeklyReportPage />} />
+          <Route path="/questionnaire" element={<QuestionnairePage onQuestionnaireComplete={handleQuestionnaireComplete} />} />
           {/* Redirect any other path to /login if not logged in */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          {/* Временно отключен редирект незалогиненных пользователей */}
+          {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
         </>
       ) : needsQuestionnaire ? (
         <>
