@@ -1,6 +1,8 @@
 import Fastify from 'fastify';
+import fastifyCors from '@fastify/cors';
 import fastifyCookie from '@fastify/cookie';
 import fastifySession from '@fastify/session';
+import authRoutes from './routes/authRoutes';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); // Load .env file
@@ -38,7 +40,6 @@ const buildApp = () => {
     saveUninitialized: false,
   });
 
-  import authRoutes from './routes/authRoutes';
   app.register(authRoutes, { prefix: '/auth' }); // Register auth routes under /auth prefix
 
   // Placeholder for routes
@@ -69,6 +70,12 @@ const buildApp = () => {
     });
   });
 
+
+  app.register(fastifyCors, {
+    origin: '*', // Замените на ваш фронтенд адрес в продакшене
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   return app;
 };

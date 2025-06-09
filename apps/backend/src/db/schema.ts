@@ -46,7 +46,7 @@ export const weeklyReports = pgTable('weekly_reports', {
 });
 
 // Define relations
-export const usersRelations = relations(users, ({ one, many }) }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(profiles, { fields: [users.id], references: [profiles.userId] }),
   dailyReports: many(dailyReports),
   weeklyReports: many(weeklyReports),

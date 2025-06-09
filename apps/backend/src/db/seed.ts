@@ -1,4 +1,4 @@
-import { eq, and } from 'drizzle-orm'; // Ensure this is at the top
+/* import { eq, and } from 'drizzle-orm'; // Ensure this is at the top
 import { db } from './db';
 import { AuthService } from '../services/authService'; // To use createUser for hashing
 import { users, profiles, dailyReports } from './schema'; // Import schema
@@ -81,3 +81,4 @@ main().catch(e => { // Catch any unhandled promise rejections from main
   console.error('🔴 Unhandled error in main execution:', e);
   process.exit(1);
 });
+ */

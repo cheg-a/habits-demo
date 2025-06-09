@@ -3,12 +3,13 @@ import { AuthService } from '../services/authService';
 import { z } from 'zod';
 // Imports for direct DB access if not using service fully (db, users, eq)
 // These should be removed if AuthService.findUserById is used exclusively
-import { db } from '../db/db';
+import { db } from '../db/index';
 import { users } from '../db/schema';
 import { eq } from 'drizzle-orm';
 
 
 const authService = new AuthService();
+
 
 const loginSchema = z.object({
   username: z.string().min(1, 'Username is required'),
@@ -31,7 +32,7 @@ export const loginHandler = async (request: FastifyRequest, reply: FastifyReply)
 
     request.session.userId = user.id;
     const { passwordHash, ...userResponse } = user;
-    return reply.send({ message: 'Login successful', user: userResponse });
+    return reply.send({ message: 'Login successful', user: { ...userResponse, needQuestionnaire: false } });
 
   } catch (error) {
     request.log.error(error, 'Login handler error');

@@ -1,5 +1,5 @@
 {
-  "name": "api",
+  "name": "backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -19,12 +19,14 @@
     "@types/bcrypt": "^5.0.2",
     "@types/hapi__boom": "^9.0.1",
     "@types/node": "^22.15.30",
+    "@types/pg": "^8.15.4",
     "drizzle-kit": "^0.31.1",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.0.1",
     "@fastify/session": "^11.1.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^16.5.0",
