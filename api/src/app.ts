@@ -1,0 +1,76 @@
+import Fastify from 'fastify';
+import fastifyCookie from '@fastify/cookie';
+import fastifySession from '@fastify/session';
+import * as dotenv from 'dotenv';
+
+dotenv.config(); // Load .env file
+
+// Define a type for our session data
+declare module 'fastify' {
+  interface Session {
+    userId?: number;
+  }
+}
+
+const buildApp = () => {
+  const app = Fastify({
+    logger: true, // Basic logging, can be configured further
+  });
+
+  // Register cookie plugin
+  app.register(fastifyCookie);
+
+  // Register session plugin
+  const sessionSecret = process.env.SESSION_SECRET;
+  if (!sessionSecret) {
+    app.log.error('🔴 SESSION_SECRET is not set in environment variables. Application will not start.');
+    process.exit(1);
+  }
+
+  app.register(fastifySession, {
+    secret: sessionSecret,
+    cookieName: 'sessionId', // Optional: customize session cookie name
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+    },
+    saveUninitialized: false,
+  });
+
+  import authRoutes from './routes/authRoutes';
+  app.register(authRoutes, { prefix: '/auth' }); // Register auth routes under /auth prefix
+
+  // Placeholder for routes
+  app.get('/', async (request, reply) => {
+    return { hello: 'world' };
+  });
+
+
+  app.setErrorHandler((error, request, reply) => {
+    app.log.error(error); // Log the error
+
+    // For Zod validation errors, our controllers handle them.
+    // This is a fallback for other errors.
+    if (error.validation) {
+      // This check is for Fastify's built-in validation, not Zod directly here
+      // Zod errors are typically handled before this point by our specific parsing
+      reply.status(400).send({ message: 'Validation Error', errors: error.validation });
+      return;
+    }
+
+    // Send a generic error response
+    // Check if the error has a statusCode, otherwise default to 500
+    const statusCode = error.statusCode || 500;
+    reply.status(statusCode).send({
+      message: error.message || 'Internal Server Error',
+      // Optionally, include error code or name if useful and safe
+      // error: error.name
+    });
+  });
+
+
+  return app;
+};
+
+export default buildApp;
