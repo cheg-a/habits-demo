@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { submitWeeklyReport } from '../services/api';
 import '../App.css'; // Assuming styles from App.css are needed
 
 // Helper function from DailyReportPage.jsx
@@ -12,31 +13,59 @@ function formatDate(date) {
 
 const WeeklyReportPage = ({ weekNum }) => {
   const questions = [
-    "Какие главные достижения были на этой неделе в контексте ваших привычек?",
-    "Какие препятствия возникли на пути к формированию привычек?",
-    "Что вы узнали о себе и своих привычках за эту неделю?",
-    "Какие стратегии были наиболее эффективными для поддержания привычек?",
-    "Как вы себя чувствовали, следуя своим привычкам?",
-    "Какие корректировки вы планируете внести в свои привычки на следующей неделе?",
-    "Общая оценка вашей недели по шкале от 1 до 10 (где 10 - отлично)."
+    { id: "weeklyGoal", title: "На этой неделе привычка предполагает следующую цель(или несколько)?" },
+    { id: "successfulStrategies", title: "С чем вы успешно справились?" },
+    { id: "difficulties", title: "Что для вас было трудным?" },
+    { id: "influences", title: "Что влияло на вашу привычку на протяжении недели?" },
+    { id: "changes", title: "Что хотели бы изменить на следующей неделе?" },
+    { id: "copingStrategies", title: "Как вы справились с трудностями на пути к формированию привычки?" },
+    { id: "nextWeekGoals", title: "На следующей неделе вы огласите такую цель(или несколько)." }
   ];
+
+  // Состояние для хранения ответов пользователя
+  const [answers, setAnswers] = useState({});
+
+  // Обработчик изменения ответа пользователя
+  const handleInputChange = (questionId, value) => {
+    setAnswers(prevAnswers => ({
+      ...prevAnswers,
+      [questionId]: value
+    }));
+  };
+
+  // Обработчик отправки формы
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Формируем объект для отправки на бэкенд
+    const reportData = {
+      weekNumber: weekNum,
+      date: new Date().toISOString(),
+      answers: answers
+    };
+    
+    console.log('Отправка данных на сервер:', reportData);
+    // Здесь будет вызов API для отправки данных на сервер
+    submitWeeklyReport(reportData);
+  };
 
   const today = formatDate(new Date());
 
   return (
     <div className="app-container">
-      <form className="habit-journal">
+      <form className="habit-journal" onSubmit={handleSubmit}>
         <div className="journal-header">
           <h1 className="journal-title">Еженедельный отчет #{weekNum || '?'}</h1>
           <div className="journal-date">{today}</div>
         </div>
-        {questions.map((question, index) => (
-          <div className="section" key={index}>
-            <h2 className="section-title">{question}</h2>
+        {questions.map((question) => (
+          <div className="section" key={question.id}>
+            <h2 className="section-title">{question.title}</h2>
             <textarea
               rows={3}
               placeholder="Ваш ответ..."
-            // onChange={(e) => handleInputChange(index, e.target.value)} // State handling will be added later
+              value={answers[question.id] || ""}
+              onChange={(e) => handleInputChange(question.id, e.target.value)}
             />
           </div>
         ))}

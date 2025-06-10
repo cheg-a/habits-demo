@@ -108,7 +108,7 @@ function App() {
                   <nav className="main-nav">
                     <ul>
                       <li><Link to="/">Ежедневный отчет</Link></li>
-                      {dailyReport && dailyReport.reportNum % 7 === 0 && (
+                      {dailyReport && dailyReport.number % 7 === 0 && (
                         <li><Link to="/weekly-report">Еженедельный отчет</Link></li>
                       )}
                       <li><button onClick={handleLogout} className="logout-button">Выйти</button></li>
@@ -121,9 +121,9 @@ function App() {
                           <DoneDailyReportPage dailyReport={dailyReport} /> :
                           <DailyReportPage />
                       } />
-                      {dailyReport && dailyReport.reportNum % 7 === 0 && (
+                      {dailyReport && dailyReport.number % 7 === 0 && (
                         <Route path="/weekly-report" element={
-                          <WeeklyReportPage weekNum={dailyReport.reportNum / 7} />
+                          <WeeklyReportPage weekNum={dailyReport.number / 7} />
                         } />
                       )}
                       {/* Optional: Redirect from /login or /questionnaire to / if user tries to access them again */}

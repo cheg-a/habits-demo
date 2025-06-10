@@ -78,6 +78,23 @@ export const submitDailyReport = async (dailyReportData) => {
   return response.json();
 };
 
+export const submitWeeklyReport = async (weeklyReportData) => {
+  const response = await fetch(`${BASE_URL}/reports/weekly`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // Добавляем для поддержки куки
+    body: JSON.stringify(weeklyReportData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: 'Weekly report submission failed and error response is not valid JSON' }));
+    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+}
+
 // Функция для проверки активной сессии пользователя
 // Добавляем кэширование для предотвращения дублирования запросов
 let sessionCheckPromise = null;

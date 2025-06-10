@@ -22,7 +22,7 @@ const moodOptions = [
 const DoneDailyReportPage = ({ dailyReport }) => {
 	// Получаем необходимые данные из отчета
 	const {
-		reportNum,
+		number,
 		date,
 		gratitude,
 		goal,
@@ -52,7 +52,7 @@ const DoneDailyReportPage = ({ dailyReport }) => {
 		<div className="app-container">
 			<div className="habit-journal">
 				<div className="journal-header">
-					<h1 className="journal-title">День №{reportNum} </h1>
+					<h1 className="journal-title">День №{number} </h1>
 					<div className="journal-date">{date}</div>
 				</div>
 

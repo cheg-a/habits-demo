@@ -43,6 +43,7 @@ export const dailyReports = pgTable(
     gratitude: text("gratitude").notNull(),
     goal: text("goal").notNull(),
     motivation: integer("motivation"), // Assuming integer for motivation level value
+    number: integer("number").default(1).notNull(), // Assuming this is a report number or ID
     mood: text("mood"), // Kept as text, can store emoji or label
     influence: text("influence"),
     habits: jsonb("habits").notNull(), // To store array of habit objects
@@ -74,17 +75,20 @@ export const weeklyReports = pgTable(
     userId: integer("user_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
-    weekStartDate: date("week_start_date").notNull(),
-    summary: text("summary").notNull(),
-    achievements: text("achievements"),
-    challenges: text("challenges"),
+    date: text("date").notNull(),
+    successfulStrategies: text("successful_strategies").notNull(),
+    difficulties: text("difficulties").notNull(),
+    influences: text("influences").notNull(),
+    changes: text("changes").notNull(),
+    copingStrategies: text("coping_strategies").notNull(),
+    nextWeekGoals: text("next_week_goals").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => {
     return {
-      userIdWeekStartDateIdx: uniqueIndex("user_id_week_start_date_idx").on(
+      weeklyUserIdDateIdx: uniqueIndex("weekly_user_id_date_idx").on(
         table.userId,
-        table.weekStartDate,
+        table.date,
       ),
     };
   },

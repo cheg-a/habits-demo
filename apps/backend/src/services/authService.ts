@@ -49,8 +49,6 @@ export class AuthService {
         isDefaultPassword: users.isDefaultPassword,
         dailyReport: dailyReports,
         questionnaires,
-        reportNum: sql`ROW_NUMBER() OVER (PARTITION BY users.id ORDER BY daily_reports.created_at ASC)`,
-        // Add other fields as needed
       })
       .from(users)
       .where(eq(users.id, userId))
@@ -71,9 +69,7 @@ export class AuthService {
     const user = userArray[0];
     return {
       ...pick(user, ["id", "username", "createdAt", "isDefaultPassword"]),
-      dailyReport: user.dailyReport
-        ? { ...user.dailyReport, reportNum: user.reportNum }
-        : null,
+      dailyReport: user.dailyReport || null,
       needQuestionnaire: !user.questionnaires,
     };
   }
