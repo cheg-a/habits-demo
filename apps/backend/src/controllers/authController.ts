@@ -40,6 +40,30 @@ export const loginHandler = async (request: FastifyRequest, reply: FastifyReply)
   }
 };
 
+export const logoutHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    if (request.session.userId) {
+      request.session.destroy((err) => {
+        if (err) {
+          request.log.error(err, 'Session destruction failed during logout');
+          // Even if session destruction fails, we might still want to inform the client
+          // that a logout attempt was made and an error occurred.
+          // Depending on security policy, you might choose not to send a success message here.
+          return reply.status(500).send({ message: 'Logout failed due to server error during session destruction.' });
+        }
+        return reply.send({ message: 'Logout successful' });
+      });
+    } else {
+      // If there's no session, arguably the user is already "logged out".
+      // Sending a success message might be appropriate.
+      return reply.send({ message: 'Logout successful (no active session)' });
+    }
+  } catch (error) {
+    request.log.error(error, 'Logout handler error');
+    return reply.status(500).send({ message: 'Internal Server Error during logout process' });
+  }
+};
+
 export const whoamiHandler = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     if (!request.session.userId) {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { submitDailyReport } from '../services/api'; // Import submitDailyReport
 import '../App.css'; // Assuming styles from App.css are needed
 
 // Helper function from App.jsx
@@ -38,7 +39,18 @@ const DailyReportPage = () => {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState(''); // Added submitError state
   const today = formatDate(new Date());
+
+  const resetForm = () => {
+    setMotivation(null);
+    setMood(null);
+    setGratitude('');
+    setGoal('');
+    setInfluence('');
+    setHabits(Array(5).fill({ text: '', problem: false, completed: false }));
+    // Do not reset 'submitted' here if we want to show "Отправлено ✓" for a bit
+  };
 
   const handleHabitChange = (idx, field, value) => {
     setHabits((habits) =>
@@ -58,32 +70,56 @@ const DailyReportPage = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => { // Made async
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(''); // Clear previous errors
+    // Keep submitted true for a bit if it was true, or set to false before new attempt
+    // setSubmitted(false); // Optional: clear "Отправлено ✓" immediately on new submit
 
     const data = {
       date: today,
       gratitude,
       goal,
       motivation,
-      mood,
+      // Mood is stored as index, backend might expect string or index.
+      // Assuming backend handles index or we map it here/in api.js if needed.
+      // For now, sending mood index (or null).
+      mood: mood !== null ? moodOptions[mood]?.label : null, // Sending label, or null
       influence,
       habits: habits.filter(h => h.text.trim() !== ''),
     };
 
-    console.log('Данные формы:', data);
-
-    // Имитация отправки данных на сервер
-    setTimeout(() => {
+    // Basic validation: ensure at least one habit is filled if habits array is a primary part of the report
+    if (data.habits.length === 0) {
+      setSubmitError('Пожалуйста, добавьте хотя бы одну привычку для отчета.');
       setIsSubmitting(false);
-      setSubmitted(true);
+      return;
+    }
+    if (!data.gratitude || !data.goal) {
+      setSubmitError('Поля "Благодарность" и "Цель" обязательны.');
+      setIsSubmitting(false);
+      return;
+    }
 
-      // Сброс формы через 2 секунды после успешной отправки
+    console.log('Отправка данных формы:', data);
+
+    try {
+      await submitDailyReport(data);
+      setSubmitted(true); // Show success
+      setSubmitError(''); // Clear any previous error
+      // Reset form after a short delay to show "Отправлено ✓"
       setTimeout(() => {
-        setSubmitted(false);
+        resetForm();
+        setSubmitted(false); // Reset submitted after form reset and delay
       }, 2000);
-    }, 1000);
+    } catch (error) {
+      console.error('Ошибка при отправке ежедневного отчета:', error);
+      setSubmitError(error.message || 'Не удалось сохранить отчет. Пожалуйста, попробуйте еще раз.');
+      setSubmitted(false); // Ensure submitted is false on error
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -238,11 +274,16 @@ const DailyReportPage = () => {
           <button
             type="submit"
             className={`submit-button ${isSubmitting ? 'submitting' : ''} ${submitted ? 'submitted' : ''}`}
-            disabled={isSubmitting || submitted}
+            disabled={isSubmitting || (submitted && !submitError)} // Disable if submitting OR submitted successfully (no error)
           >
-            {isSubmitting ? 'Отправка...' : submitted ? 'Отправлено ✓' : 'Сохранить запись'}
+            {isSubmitting ? 'Отправка...' : (submitted && !submitError) ? 'Отправлено ✓' : 'Сохранить запись'}
           </button>
         </div>
+        {submitError && (
+          <div className="error-message" style={{ marginTop: '15px', textAlign: 'center' }}>
+            {submitError}
+          </div>
+        )}
       </form>
 
       <footer className="app-footer">

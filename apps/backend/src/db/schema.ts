@@ -1,4 +1,4 @@
-import { serial, text, timestamp, pgTable, integer, date, numeric, uniqueIndex } from 'drizzle-orm/pg-core';
+import { serial, text, timestamp, pgTable, integer, date, numeric, uniqueIndex, jsonb } from 'drizzle-orm/pg-core'; // Added jsonb
 import { relations } from 'drizzle-orm'; // Import relations
 
 export const users = pgTable('users', {
@@ -20,14 +20,17 @@ export const profiles = pgTable('profiles', {
 export const dailyReports = pgTable('daily_reports', {
   id: serial('id').primaryKey(),
   userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
-  reportDate: date('report_date').notNull(),
-  mood: text('mood').notNull(),
-  sleepHours: numeric('sleep_hours'),
-  notes: text('notes'),
+  date: text('date').notNull(), // Renamed from reportDate, changed to text
+  gratitude: text('gratitude').notNull(),
+  goal: text('goal').notNull(),
+  motivation: integer('motivation'), // Assuming integer for motivation level value
+  mood: text('mood'), // Kept as text, can store emoji or label
+  influence: text('influence'),
+  habits: jsonb('habits').notNull(), // To store array of habit objects
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => {
   return {
-    userIdReportDateIdx: uniqueIndex('user_id_report_date_idx').on(table.userId, table.reportDate),
+    userIdDateIdx: uniqueIndex('user_id_date_idx').on(table.userId, table.date), // Updated index
   };
 });
 
@@ -50,6 +53,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(profiles, { fields: [users.id], references: [profiles.userId] }),
   dailyReports: many(dailyReports),
   weeklyReports: many(weeklyReports),
+  questionnaires: many(questionnaires), // Added relation to questionnaires
 }));
 
 export const profilesRelations = relations(profiles, ({ one }) => ({
@@ -62,4 +66,17 @@ export const dailyReportsRelations = relations(dailyReports, ({ one }) => ({
 
 export const weeklyReportsRelations = relations(weeklyReports, ({ one }) => ({
   user: one(users, { fields: [weeklyReports.userId], references: [users.id] }),
+}));
+
+// Schema for Questionnaires
+export const questionnaires = pgTable('questionnaires', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  answers: jsonb('answers').notNull(), // Using jsonb to store questionnaire answers
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Relations for Questionnaires
+export const questionnairesRelations = relations(questionnaires, ({ one }) => ({
+  user: one(users, { fields: [questionnaires.userId], references: [users.id] }),
 }));

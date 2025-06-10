@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Routes, Route, Navigate, Link } from 'react-router-dom';
+import { Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import './App.css';
+import { logoutUser } from './services/api'; // Import logoutUser
 import DailyReportPage from './pages/DailyReportPage';
 import LoginPage from './pages/LoginPage';
 import WeeklyReportPage from './pages/WeeklyReportPage';
@@ -10,10 +11,25 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Default: not logged in
   
   const [needsQuestionnaire, setNeedsQuestionnaire] = useState(false); // Изменено: по умолчанию false, значение придет с сервера
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleLoginSuccess = (needQuestionnaire) => {
     setIsLoggedIn(true);
     setNeedsQuestionnaire(needQuestionnaire); // Устанавливаем значение, полученное с сервера
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      setIsLoggedIn(false);
+      setNeedsQuestionnaire(false); // Reset questionnaire state
+      // Navigation to /login is handled by conditional rendering
+      // but explicitly navigating might be desired in some SPA setups
+      // navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Optionally, show a user-facing error message
+    }
   };
 
   const handleQuestionnaireComplete = () => {
@@ -47,7 +63,7 @@ function App() {
                 <ul>
                   <li><Link to="/">Ежедневный отчет</Link></li>
                   <li><Link to="/weekly-report">Еженедельный отчет</Link></li>
-                  {/* We can add a logout button here later */}
+                  <li><button onClick={handleLogout} className="logout-button">Выйти</button></li>
                 </ul>
               </nav>
               <div className="content-area">

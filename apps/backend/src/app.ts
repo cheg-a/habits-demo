@@ -3,6 +3,8 @@ import fastifyCors from '@fastify/cors';
 import fastifyCookie from '@fastify/cookie';
 import fastifySession from '@fastify/session';
 import authRoutes from './routes/authRoutes';
+import questionnaireRoutes from './routes/questionnaireRoutes'; // Import questionnaire routes
+import reportRoutes from './routes/reportRoutes'; // Import report routes
 import * as dotenv from 'dotenv';
 
 dotenv.config(); // Load .env file
@@ -41,6 +43,8 @@ const buildApp = () => {
   });
 
   app.register(authRoutes, { prefix: '/auth' }); // Register auth routes under /auth prefix
+  app.register(questionnaireRoutes, { prefix: '/questionnaire' }); // Register questionnaire routes
+  app.register(reportRoutes, { prefix: '/reports' }); // Register report routes
 
   // Placeholder for routes
   app.get('/', async (request, reply) => {
