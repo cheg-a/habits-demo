@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { submitQuestionnaire } from '../services/api'; // Import submitQuestionnaire
 import '../App.css'; // Assuming styles from App.css are needed
 
 // Добавление списка жизненных сфер для оценки
@@ -175,6 +176,9 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
   });
   // Флаг для проверки уникальности оценок
   const [hasUniqueRatings, setHasUniqueRatings] = useState(true);
+  // State for API submission
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const handleAnswerChange = (e) => {
     const newAnswers = [...answers];
@@ -268,65 +272,74 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
     return true;
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => { // Made async
     // Проверяем, является ли текущий шаг комбинированным и заполнены ли все поля
-    if ((currentStep === 3 || currentStep === 4 || currentStep === 5) && !isCombinedStepComplete()) {
-      alert('Пожалуйста, заполните все поля комбинированного шага.');
+    // Note: Step indices seem to be 0-based, so combined steps might be 2, 4, 5, 6.
+    // The original check (currentStep === 3 || currentStep === 4 || currentStep === 5) might need adjustment
+    // if questionnaireSteps array was changed. Assuming it's correct for now.
+    const currentStepData = questionnaireSteps[currentStep];
+    if (currentStepData.type?.startsWith("combinedStep") && !isCombinedStepComplete()) {
+      alert('Пожалуйста, заполните все поля этого шага.');
       return;
     }
     
     if (currentStep < questionnaireSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      // This is the last step, call onQuestionnaireComplete
-      if (onQuestionnaireComplete) {
-        // Включаем ответы комбинированного шага в ответы
-        const completeAnswers = [...answers];
-        
-        // Сохраняем данные комбинированных шагов
-        // Шаг с habitsBad и habitsGood
-        if (questionnaireSteps[4] && questionnaireSteps[4].type === "combinedStep") {
-          completeAnswers[4] = JSON.stringify({
-            habitsBad: combinedStepAnswers.habitsBad,
-            habitsGood: combinedStepAnswers.habitsGood
-          });
+      // This is the last step, prepare and submit data
+      setIsSubmitting(true);
+      setSubmitError('');
+
+      // Включаем ответы комбинированного шага в ответы
+      const completeAnswers = [...answers];
+      // Ensure step indices align with your questionnaireSteps structure for combined answers
+      // Example: if step 2 is the first combined step (qualities, lifeAreas, summary)
+      if (questionnaireSteps[2] && questionnaireSteps[2].type === "combinedStep" && questionnaireSteps[2].sections.length === 3) {
+        completeAnswers[2] = JSON.stringify({
+          lifeAreaRatings,
+          qualities: combinedStepAnswers.qualities,
+          summary: combinedStepAnswers.summary
+        });
+      }
+      // Шаг с habitsBad и habitsGood (assuming index 4)
+      if (questionnaireSteps[4] && questionnaireSteps[4].type === "combinedStep") {
+        completeAnswers[4] = JSON.stringify({
+          habitsBad: combinedStepAnswers.habitsBad,
+          habitsGood: combinedStepAnswers.habitsGood
+        });
+      }
+      // Шаг с discipline и smallChange (assuming index 5)
+      if (questionnaireSteps[5] && questionnaireSteps[5].type === "combinedStep") {
+        completeAnswers[5] = JSON.stringify({
+          discipline: combinedStepAnswers.discipline,
+          smallChange: combinedStepAnswers.smallChange
+        });
+      }
+      // Шаг с КВДРЧ (assuming index 6)
+      if (questionnaireSteps[6] && questionnaireSteps[6].type === "combinedStepKVDRCH") {
+        completeAnswers[6] = JSON.stringify({
+          konkretna: combinedStepAnswers.konkretna,
+          vymiriuvana: combinedStepAnswers.vymiriuvana,
+          dosyazhna: combinedStepAnswers.dosyazhna,
+          relevantna: combinedStepAnswers.relevantna,
+          chasova: combinedStepAnswers.chasova
+        });
+      }
+
+      const payload = { answers: completeAnswers };
+      console.log("Submitting questionnaire with payload:", payload);
+
+      try {
+        await submitQuestionnaire(payload); // Pass the whole payload object
+        if (onQuestionnaireComplete) {
+          onQuestionnaireComplete();
         }
-        
-        // Шаг с discipline и smallChange
-        if (questionnaireSteps[5] && questionnaireSteps[5].type === "combinedStep") {
-          completeAnswers[5] = JSON.stringify({
-            discipline: combinedStepAnswers.discipline,
-            smallChange: combinedStepAnswers.smallChange
-          });
-        }
-        
-        // Шаг с КВДРЧ
-        if (questionnaireSteps[6] && questionnaireSteps[6].type === "combinedStepKVDRCH") {
-          completeAnswers[6] = JSON.stringify({
-            konkretna: combinedStepAnswers.konkretna,
-            vymiriuvana: combinedStepAnswers.vymiriuvana,
-            dosyazhna: combinedStepAnswers.dosyazhna,
-            relevantna: combinedStepAnswers.relevantna,
-            chasova: combinedStepAnswers.chasova
-          });
-        }
-        
-        // Старый шаг с qualities, lifeAreas и summary (если есть)
-        if (questionnaireSteps.some(step => step.type === "combinedStep" && step.sections && step.sections.length === 3)) {
-          const stepIndex = questionnaireSteps.findIndex(step => 
-            step.type === "combinedStep" && step.sections && step.sections.length === 3);
-          
-          if (stepIndex !== -1) {
-            completeAnswers[stepIndex] = JSON.stringify({
-              lifeAreaRatings,
-              qualities: combinedStepAnswers.qualities,
-              summary: combinedStepAnswers.summary
-            });
-          }
-        }
-        
-        console.log("Questionnaire answers:", completeAnswers); // Optional: log answers
-        onQuestionnaireComplete();
+        // Optionally, show success message or redirect here
+      } catch (error) {
+        console.error("Failed to submit questionnaire:", error);
+        setSubmitError(error.message || "Не удалось отправить анкету. Пожалуйста, попробуйте еще раз.");
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -585,12 +598,21 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
             onClick={handleNextStep}
             disabled={(currentStepData.needsInput && currentStepData.type !== "combinedStep" && answers[currentStep].trim() === '') || 
                       (currentStepData.type === "lifeAreas" && !isLifeAreasStepComplete()) ||
-                      (currentStepData.type === "combinedStep" && !isCombinedStepComplete())}
+                      (currentStepData.type === "combinedStep" && !isCombinedStepComplete()) ||
+                      (currentStep === questionnaireSteps.length - 1 && isSubmitting) // Disable on last step if submitting
+          }
           >
-            {currentStep === questionnaireSteps.length - 1 ? 'Завершить' : 'Далее'}
+            {currentStep === questionnaireSteps.length - 1
+              ? (isSubmitting ? 'Отправка...' : 'Завершить')
+              : 'Далее'}
             {currentStep < questionnaireSteps.length - 1 && <span style={{ marginLeft: '5px' }}>➔</span>}
           </button>
         </div>
+        {submitError && (
+          <div className="error-message" style={{ marginTop: '15px', textAlign: 'center' }}>
+            {submitError}
+          </div>
+        )}
       </div>
       <footer className="app-footer">
         <p>Дневник отслеживания привычек © 2025</p>

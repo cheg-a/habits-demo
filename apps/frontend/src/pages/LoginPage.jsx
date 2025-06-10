@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { loginUser } from '../services/api'; // Import loginUser
 import '../App.css'; // Убедитесь, что App.css импортирован
 
 const LoginPage = ({ onLoginSuccess }) => {
@@ -15,26 +16,10 @@ const LoginPage = ({ onLoginSuccess }) => {
     setIsLoading(true); // Включаем состояние загрузки
     setError(''); // Сбрасываем предыдущие ошибки
 
-    // Замените 'YOUR_API_HOST' на реальный адрес вашего API
-    const apiHost = 'http://127.0.0.1:3000'; 
-
     try {
-      const response = await fetch(`${apiHost}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      // Используем функцию loginUser из api.js
+      const data = await loginUser(username, password);
 
-      if (!response.ok) {
-        // Если сервер вернул ошибку (например, 401 Unauthorized)
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Неверные учетные данные.');
-      }
-
-      // Получаем данные пользователя из ответа
-      const data = await response.json();
       console.log('Login successful, response data:', data);
       
       // Вызываем колбэк успешного входа и передаем данные о необходимости анкеты
@@ -42,14 +27,14 @@ const LoginPage = ({ onLoginSuccess }) => {
         // Проверяем наличие объекта user и свойства needQuestionnaire
         const needQuestionnaire = data.user && data.user.needQuestionnaire !== undefined 
           ? data.user.needQuestionnaire 
-          : false;
+          : false; // Default to false if not present
         
         onLoginSuccess(needQuestionnaire);
       }
 
     } catch (err) {
-      // Обрабатываем ошибки сети или ошибки от сервера
-      setError(err.message);
+      // Обрабатываем ошибки (уже обработанные в loginUser, но можно добавить специфичную логику)
+      setError(err.message || 'Произошла ошибка при входе.'); // Используем сообщение из ошибки, если есть
     } finally {
       setIsLoading(false); // Выключаем состояние загрузки
     }
