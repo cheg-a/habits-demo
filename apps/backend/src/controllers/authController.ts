@@ -42,6 +42,7 @@ export const loginHandler = async (
 
     request.session.userId = user.id;
 
+    await request.session.save();
     // Получаем полную информацию о пользователе из базы данных, включая isDefaultPassword
     const userArray = await db
       .select({
