@@ -1,13 +1,32 @@
-import { FastifyInstance } from 'fastify';
-import { loginHandler, whoamiHandler, logoutHandler } from '../controllers/authController'; // Ensure whoamiHandler is imported
-import { db } from '../db/index'; // For direct db access in controller if not using service
-import { users } from '../db/schema'; // For direct db access
-import { eq } from 'drizzle-orm'; // For direct db access
+import { FastifyInstance } from "fastify";
+import {
+  loginHandler,
+  whoamiHandler,
+  logoutHandler,
+  updatePasswordHandler,
+} from "../controllers/authController";
+import { AuthRouteOptions } from "../middleware/authMiddleware";
 
 async function authRoutes(fastify: FastifyInstance) {
-  fastify.post('/login', loginHandler);
-  fastify.get('/whoami', whoamiHandler); // Add the whoami route
-  fastify.post('/logout', logoutHandler);
+  fastify.post("/login", loginHandler);
+
+  // Маршрут с проверкой авторизации
+  fastify.get("/whoami", {
+    handler: whoamiHandler,
+    config: { auth: true } as AuthRouteOptions,
+  });
+
+  // Маршрут с проверкой авторизации
+  fastify.post("/logout", {
+    handler: logoutHandler,
+    config: { auth: true } as AuthRouteOptions,
+  });
+
+  // Маршрут для обновления пароля
+  fastify.post("/update-password", {
+    handler: updatePasswordHandler,
+    config: { auth: true } as AuthRouteOptions,
+  });
 }
 
 export default authRoutes;

@@ -21,14 +21,15 @@ const motivationLevels = [
 ];
 
 const moodOptions = [
-  { emoji: '😃', label: 'Отлично' },
-  { emoji: '🙂', label: 'Хорошо' },
-  { emoji: '😐', label: 'Нейтрально' },
-  { emoji: '🙁', label: 'Грустно' },
   { emoji: '😢', label: 'Плохо' },
+  { emoji: '🙁', label: 'Грустно' },
+  { emoji: '😐', label: 'Нейтрально' },
+  { emoji: '🙂', label: 'Хорошо' },
+  { emoji: '😃', label: 'Отлично' },
 ];
 
 const DailyReportPage = () => {
+  const [dailyReport, setDailyReport] = useState(null);
   const [motivation, setMotivation] = useState(null);
   const [mood, setMood] = useState(null);
   const [gratitude, setGratitude] = useState('');
@@ -102,17 +103,16 @@ const DailyReportPage = () => {
       return;
     }
 
-    console.log('Отправка данных формы:', data);
-
     try {
-      await submitDailyReport(data);
+     const submittedDailyReport = await submitDailyReport(data);
       setSubmitted(true); // Show success
       setSubmitError(''); // Clear any previous error
+      setDailyReport(submittedDailyReport); // Save the submitted report data if needed
       // Reset form after a short delay to show "Отправлено ✓"
-      setTimeout(() => {
-        resetForm();
-        setSubmitted(false); // Reset submitted after form reset and delay
-      }, 2000);
+      // setTimeout(() => {
+      //   resetForm();
+      //   setSubmitted(false); // Reset submitted after form reset and delay
+      // }, 2000);
     } catch (error) {
       console.error('Ошибка при отправке ежедневного отчета:', error);
       setSubmitError(error.message || 'Не удалось сохранить отчет. Пожалуйста, попробуйте еще раз.');

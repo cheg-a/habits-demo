@@ -20,16 +20,17 @@ const LoginPage = ({ onLoginSuccess }) => {
       // Используем функцию loginUser из api.js
       const data = await loginUser(username, password);
 
-      console.log('Login successful, response data:', data);
-      
       // Вызываем колбэк успешного входа и передаем данные о необходимости анкеты
       if (onLoginSuccess) {
         // Проверяем наличие объекта user и свойства needQuestionnaire
-        const needQuestionnaire = data.user && data.user.needQuestionnaire !== undefined 
-          ? data.user.needQuestionnaire 
-          : false; // Default to false if not present
+        const needQuestionnaire = !!data.needQuestionnaire; // Default to false if not present
         
-        onLoginSuccess(needQuestionnaire);
+        // Передаем информацию о dailyReport и isDefaultPassword
+        onLoginSuccess(
+          needQuestionnaire, 
+          data.dailyReport, 
+          data.isDefaultPassword === true
+        );
       }
 
     } catch (err) {

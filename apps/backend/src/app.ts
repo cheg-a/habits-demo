@@ -5,6 +5,7 @@ import fastifySession from '@fastify/session';
 import authRoutes from './routes/authRoutes';
 import questionnaireRoutes from './routes/questionnaireRoutes'; // Import questionnaire routes
 import reportRoutes from './routes/reportRoutes'; // Import report routes
+import { withAuth } from './middleware/authMiddleware'; // Импортируем функцию для настройки авторизации
 import * as dotenv from 'dotenv';
 
 dotenv.config(); // Load .env file
@@ -19,6 +20,7 @@ declare module 'fastify' {
 const buildApp = () => {
   const app = Fastify({
     logger: true, // Basic logging, can be configured further
+
   });
 
   // Register cookie plugin
@@ -35,12 +37,17 @@ const buildApp = () => {
     secret: sessionSecret,
     cookieName: 'sessionId', // Optional: customize session cookie name
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      secure: false, // Должно быть true если sameSite: 'none'
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+      sameSite: 'lax', // Важно для кросс-доменных запросов
+      path: '/', // Убедимся, что куки доступны для всех путей
     },
     saveUninitialized: false,
   });
+
+  // Применяем middleware для проверки авторизации
+  withAuth(app);
 
   app.register(authRoutes, { prefix: '/auth' }); // Register auth routes under /auth prefix
   app.register(questionnaireRoutes, { prefix: '/questionnaire' }); // Register questionnaire routes
@@ -76,9 +83,10 @@ const buildApp = () => {
 
 
   app.register(fastifyCors, {
-    origin: '*', // Замените на ваш фронтенд адрес в продакшене
+    origin: ['http://habbit.local:5173'], // Разрешаем оба варианта для фронтенда
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Важно для поддержки куки!
   });
 
   return app;

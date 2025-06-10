@@ -18,50 +18,50 @@ const lifeAreas = [
 
 const questionnaireSteps = [
   {
+    id: "welcome",
     title: "Добро пожаловать!",
     introText: "Этот опросник поможет вам лучше понять ваши текущие привычки и мотивацию. Пожалуйста, отвечайте честно и развернуто. Ваши ответы помогут вам сформировать более эффективные стратегии для достижения ваших целей. Нажмите 'Далее', чтобы начать.",
     placeholder: "Это поле не для ввода на первом шаге.",
     needsInput: false,
   },
   {
-    title: "Осознание привычек",
-    introText: "Опишите одну или две привычки, которые вы хотели бы развить или изменить. Почему эти привычки важны для вас?",
-    placeholder: "Например: Хочу начать регулярно заниматься спортом, чтобы улучшить здоровье...",
-    needsInput: true,
-  },
-  {
+    id: "self_analysis",
     title: "Самоанализ и жизненные приоритеты",
     introText: "Этот шаг поможет вам определить ваши приоритеты и направления для развития.",
     type: "combinedStep",
     needsInput: true,
     sections: [
       {
-        title: "Какие качества вы хотите развивать в себе?",
+        title: `Ваши ценности отражают самое главное для вас в жизни, это основные принципы вашего существования. В идеале ваша жизнь и то, чему вы уделяете время, это отображение таковых ценностей. К сожалению, некоторые наши жизненные предпочтения не соответствуют этим ценностям. 
+    
+        Поразмыслите над вопросом: какова ваша главнейшая в жизни цель? Какие черты вы хотите в себе развить?`,
         placeholder: "Опишите качества, которые вы хотели бы в себе развить...",
         fieldName: "qualities"
       },
       {
-        title: "Оценка жизненных сфер",
-        introText: "Пронумеруйте важность следующих сфер жизни от 1 (наиболее важная для вас) до 10 (совсем незначимая). Вам необходимо определить приоритет у всех сфер. Это непростое задание, своеобразный вызов себе. Вопросы к самим себе сейчас могут навернуть вас на неожиданное открытие в себе.",
+        title: "Пронумеруйте важность следующих сфер жизни от 1 (наиболее важная для вас) до 10 (совсем незначимая). Вам необходимо определить приоритет у всех сфер. Это непростое задание, своеобразный вызов себе. Вопросы к самим себе сейчас могут навернуть вас на неожиданное открытие в себе.",
         fieldName: "lifeAreas"
       },
       {
-        title: "Обобщение результатов",
-        introText: "Теперь попробуйте обобщить итоги двух предыдущих упражнений и определить, что для вас наиболее важно",
+        title: "Теперь попробуйте обобщить итоги двух предыдущих упражнений и определить, что для вас наиболее важно",
         placeholder: "Исходя из оценки жизненных сфер и качеств для развития, что для вас наиболее важно...",
         fieldName: "summary"
       }
     ]
   },
   {
+    id: "goal_setting",
     title: "Какую цель ставите перед собой?",
-    introText: "Что мотивирует вас работать над этими привычками? Какие конкретные цели вы связываете с их успешным формированием?",
+    introText: `Cледующим шагом на пути изменений привычек после осознания ценностей должно стать определение цели, многих намерений. 
+    
+    Чего именно хотите достичь?`,
     placeholder: "Чего именно хотите достичь?",
     needsInput: true,
   },
-   {
-    title: "Самоанализ и жизненные приоритеты",
-    introText: "Этот шаг поможет вам определить ваши приоритеты и направления для развития.",
+  {
+    id: "habits_analysis",
+    title: "Анализ привычек",
+    introText: `Ваши привычки -- это ежедневные действия, которые приближают вас к вашей цели или отдаляют от нее. Хорошо подумайте, какие привычки способствуют вашему развитию, а какие, наоборот, мешают.`,
     type: "combinedStep",
     needsInput: true,
     sections: [
@@ -71,33 +71,14 @@ const questionnaireSteps = [
         fieldName: "habitsBad"
       },
       {
-        title: "Какие новые привычки вы хотите развивать?",
-        introText: "Теперь попробуйте обобщить итоги двух предыдущих упражнений и определить, что для вас наиболее важно",
+        title: "Какие новые полезные привычки вы хотите развивать?",
         placeholder: "Исходя из оценки жизненных сфер и качеств для развития, что для вас наиболее важно...",
         fieldName: "habitsGood"
       }
     ]
   },
   {
-    title: "Начинаем с малого",
-    introText: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Illum nobis et doloribus excepturi laboriosam, enim sed voluptatibus nihil ea assumenda eligendi quod, ad eaque illo. Ipsum illo numquam veniam culpa harum ut porro aliquid. Ut quibusdam dolorum fugit? Optio consectetur architecto laudantium beatae aliquam molestiae! Illum sed eius mollitia accusamus modi optio repudiandae laboriosam iste, labore hic sapiente molestias inventore atque iure? Commodi vel ea est officiis explicabo dicta voluptates quae recusandae, accusantium in blanditiis vitae obcaecati fuga nobis facilis, nemo reiciendis aperiam beatae voluptatum aliquam quis itaque? Laboriosam, dolore! Unde dolor iure omnis molestiae, culpa voluptatibus facere ipsa? Consequatur quam pariatur autem similique dolor reiciendis quaerat! Eaque architecto quaerat nihil tenetur, cupiditate deleniti, soluta totam saepe mollitia modi est accusamus culpa fugit alias non, iure illo dolores esse quam ad blanditiis! Ducimus sit, necessitatibus tempora excepturi doloribus officiis iste sint ratione corrupti repellendus deserunt accusantium ipsum esse illo aspernatur aliquam animi reiciendis ex perspiciatis hic minus possimus numquam vel odio! Veniam placeat ipsa vel minus asperiores, corrupti dolorem culpa assumenda ducimus, dolore quisquam cupiditate excepturi veritatis at vitae neque recusandae iure minima omnis enim maxime nostrum sint eum. Itaque vel sint excepturi, minima ipsum a fugiat? Animi provident harum delectus, quis neque magni culpa atque molestias molestiae reprehenderit voluptatibus modi earum eaque alias officia maiores. Vitae corporis aliquam quaerat impedit eligendi consequuntur tenetur possimus. Impedit facere eveniet consequatur aliquam aut cumque eius officia enim atque maiores? Sint perspiciatis explicabo necessitatibus. Aperiam officia nobis quos rem. Voluptate laudantium nisi consectetur eum modi accusamus, numquam dolore assumenda sapiente earum, quisquam atque magni repellendus exercitationem autem voluptates a itaque! Et neque facere inventore blanditiis pariatur eaque sunt soluta placeat reiciendis tempora esse dolor, ullam quasi dicta quod dolores iure velit hic, saepe autem eius architecto provident. Rerum voluptates alias fuga accusantium, laboriosam doloribus magni! Iure, libero voluptas quo tempore ducimus facilis nemo! Rerum, ut. Molestiae vero nostrum sunt perferendis aliquam, reiciendis, dolorum modi ipsam delectus commodi facilis beatae nemo quas, vitae dignissimos sit esse eligendi suscipit. Ab ducimus ea quam harum sint? Beatae perspiciatis dolore expedita consectetur quas odit assumenda odio inventore explicabo eos veritatis tempore ratione illo, sit rerum optio minus dicta, placeat quaerat rem magnam, velit vel! Laboriosam repellat quia consequuntur illum nemo eligendi cupiditate atque explicabo impedit praesentium! Culpa nulla porro tempora amet, enim corporis reiciendis at, optio quisquam earum nesciunt consequuntur doloribus, dolorum provident molestiae! Itaque doloremque ex porro architecto eligendi quo nihil. Impedit, quia! Reiciendis ad, sunt ex incidunt facere, ullam aut reprehenderit est molestiae voluptas provident nostrum corporis aliquid exercitationem earum cumque ea labore possimus expedita deleniti? Dolor beatae accusantium quaerat illo tempora culpa dicta blanditiis libero officia porro. Ab aut veritatis possimus hic aliquid a eligendi ipsam, atque reiciendis cumque. Maiores iusto molestias, inventore excepturi, nesciunt nisi sapiente ipsa qui, odio repudiandae possimus odit cum omnis placeat necessitatibus quis laboriosam. Ipsum suscipit illum molestias eius? Suscipit debitis necessitatibus eum dolor. Quas possimus quia magni, ipsam repellat dolore consequuntur libero odit alias magnam consectetur omnis dolores! Dolores maxime id nisi. Maiores neque voluptate architecto eveniet?",
-    type: "combinedStep",
-    needsInput: true,
-    sections: [
-      {
-        title: "Как часто вы придерживаетесь желаемого поведения?",
-        placeholder: "Опишите привычки, которые вы хотели бы изменить...",
-        fieldName: "discipline"
-      },
-      {
-        title: "Какое небольшое изменение может вам пригодиться?",
-        introText: "Теперь попробуйте обобщить итоги двух предыдущих упражнений и определить, что для вас наиболее важно",
-        placeholder: "Исходя из оценки жизненных сфер и качеств для развития, что для вас наиболее важно...",
-        fieldName: "smallChange"
-      }
-    ]
-  },
-  {
+    id: "kvdrch_formulation",
     title: "Формулирование привычки по КВДРЧ",
     introText: "Чтобы повысить шансы на успех, убедитесь, что ваша привычка соответствует пяти критериям, которые сокращенно называют КВДРЧ. Опишите вашу привычку согласно каждому из критериев.",
     type: "combinedStepKVDRCH",
@@ -136,22 +117,29 @@ const questionnaireSteps = [
     ]
   },
   {
-    title: "Стратегии и поддержка",
-    introText: "Какие стратегии вы планируете использовать для внедрения этих привычек? Нужна ли вам поддержка со стороны (друзья, семья, приложения)?",
-    placeholder: "Буду использовать календарь для планирования. Расскажу другу о своих планах...",
+    id: "habits_impact",
+    title: "Влияние привычек на жизнь",
+    type: "combinedStep",
     needsInput: true,
-  },
-  {
-    title: "Завершение и настрой",
-    introText: "Как вы будете отслеживать свой прогресс и вознаграждать себя за достижения? С каким настроем вы приступаете к этой работе над собой?",
-    placeholder: "Буду вести дневник привычек. Настрой позитивный и решительный!",
-    needsInput: true,
+    sections: [
+      {
+        title: "Теперь, когда вы определились с привычкой, от которой хотите избавиться,которую хотите изменить или улучшить, поразмыслите, как именно эта привычка поможет вам изменить жизнь так, чтобы она лучше соответствовала вашим ценностям. Какую ценность выбранная привычка добавит в вашу жизнь?",
+        placeholder: "Опишите, какую ценность добавит выбранная привычка в вашу жизнь...",
+        fieldName: "newValue"
+      },
+      {
+        title: "Останеться ли она для вас актуальной через пару лет? Какие намерения и ценности из тех, которым соответствует привычка, будут актуальны для вас в будущем?",
+        placeholder: "Исходя из оценки жизненных сфер и качеств для развития, что для вас наиболее важно...",
+        fieldName: "habitFuture"
+      }
+    ]
   }
+  
 ];
 
 const QuestionnairePage = ({ onQuestionnaireComplete }) => {
   const [currentStep, setCurrentStep] = useState(0); // Default to first step
-  const [answers, setAnswers] = useState(Array(questionnaireSteps.length).fill(''));
+  const [answers, setAnswers] = useState({});
   // Добавляем состояние для оценки жизненных сфер
   const [lifeAreaRatings, setLifeAreaRatings] = useState(
     lifeAreas.reduce((acc, area) => {
@@ -166,13 +154,16 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
     habitsBad: '',
     habitsGood: '',
     discipline: '',
-    smallChange: '',
+    smallChange: '', // Для шага start_small
     // Поля для КВДРЧ
     konkretna: '',
     vymiriuvana: '',
     dosyazhna: '',
     relevantna: '',
-    chasova: ''
+    chasova: '',
+    // Поля для шага "Влияние привычек на жизнь"
+    newValue: '',
+    habitFuture: '' // Переименовываем, чтобы избежать конфликта
   });
   // Флаг для проверки уникальности оценок
   const [hasUniqueRatings, setHasUniqueRatings] = useState(true);
@@ -181,9 +172,11 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
   const [submitError, setSubmitError] = useState('');
 
   const handleAnswerChange = (e) => {
-    const newAnswers = [...answers];
-    newAnswers[currentStep] = e.target.value;
-    setAnswers(newAnswers);
+    const currentStepId = questionnaireSteps[currentStep].id;
+    setAnswers(prev => ({
+      ...prev,
+      [currentStepId]: e.target.value
+    }));
   };
 
   // Обработчик изменения полей в комбинированном шаге
@@ -198,24 +191,24 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
   const handleRatingChange = (areaId, value) => {
     // Приводим к числу и проверяем диапазон 1-10
     let numValue = parseInt(value);
-    
+
     // Если пустое значение, сохраняем как пустую строку
     if (isNaN(numValue) || value === '') {
-      setLifeAreaRatings(prev => ({...prev, [areaId]: ''}));
+      setLifeAreaRatings(prev => ({ ...prev, [areaId]: '' }));
       return;
     }
-    
+
     // Ограничиваем значение диапазоном 1-10
     numValue = Math.max(1, Math.min(10, numValue));
-    
+
     setLifeAreaRatings(prev => {
-      const newRatings = {...prev, [areaId]: numValue};
-      
+      const newRatings = { ...prev, [areaId]: numValue };
+
       // Проверяем уникальность значений (не считая пустые строки)
       const values = Object.values(newRatings).filter(val => val !== '');
       const uniqueValues = new Set(values);
       setHasUniqueRatings(values.length === uniqueValues.size);
-      
+
       return newRatings;
     });
   };
@@ -229,7 +222,7 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
   // Проверяем, заполнен ли комбинированный шаг
   const isCombinedStepComplete = () => {
     const currentStepData = questionnaireSteps[currentStep];
-    
+
     // Убедимся, что мы на шаге с типом combinedStep или combinedStepKVDRCH
     if (!currentStepData || (!currentStepData.type?.startsWith("combinedStep")) || !currentStepData.sections) {
       return true; // Не комбинированный шаг, возвращаем true
@@ -237,52 +230,54 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
 
     // Для типа combinedStepKVDRCH (шаг с 5 полями КВДРЧ)
     if (currentStepData.type === "combinedStepKVDRCH") {
-      return combinedStepAnswers.konkretna.trim() !== '' && 
-             combinedStepAnswers.vymiriuvana.trim() !== '' &&
-             combinedStepAnswers.dosyazhna.trim() !== '' &&
-             combinedStepAnswers.relevantna.trim() !== '' &&
-             combinedStepAnswers.chasova.trim() !== '';
+      return combinedStepAnswers.konkretna.trim() !== '' &&
+        combinedStepAnswers.vymiriuvana.trim() !== '' &&
+        combinedStepAnswers.dosyazhna.trim() !== '' &&
+        combinedStepAnswers.relevantna.trim() !== '' &&
+        combinedStepAnswers.chasova.trim() !== '';
     }
-    
+
     // Для обычного типа combinedStep
     if (currentStepData.type === "combinedStep") {
       // Определяем, какой тип комбинированного шага у нас по fieldName
       if (currentStepData.sections.length === 2) {
         const fieldNames = currentStepData.sections.map(section => section.fieldName);
-        
+
         if (fieldNames.includes('habitsBad') && fieldNames.includes('habitsGood')) {
           // Шаг с полями habitsBad и habitsGood
-          return combinedStepAnswers.habitsBad.trim() !== '' && 
-                combinedStepAnswers.habitsGood.trim() !== '';
-        } 
+          return combinedStepAnswers.habitsBad.trim() !== '' &&
+            combinedStepAnswers.habitsGood.trim() !== '';
+        }
         else if (fieldNames.includes('discipline') && fieldNames.includes('smallChange')) {
           // Шаг с полями discipline и smallChange
-          return combinedStepAnswers.discipline.trim() !== '' && 
-                combinedStepAnswers.smallChange.trim() !== '';
+          return combinedStepAnswers.discipline.trim() !== '' &&
+            combinedStepAnswers.smallChange.trim() !== '';
+        }
+        else if (fieldNames.includes('newValue') && fieldNames.includes('habitFuture')) {
+          // Шаг "Влияние привычек на жизнь" с полями newValue и habitFuture
+          return combinedStepAnswers.newValue.trim() !== '' &&
+            combinedStepAnswers.habitFuture.trim() !== '';
         }
       } else if (currentStepData.sections.length === 3) {
         // Старый шаг с тремя полями (qualities, lifeAreas, summary)
-        return combinedStepAnswers.qualities.trim() !== '' && 
-              combinedStepAnswers.summary.trim() !== '' && 
-              isLifeAreasStepComplete();
+        return combinedStepAnswers.qualities.trim() !== '' &&
+          combinedStepAnswers.summary.trim() !== '' &&
+          isLifeAreasStepComplete();
       }
     }
-    
+
     // По умолчанию возвращаем true, чтобы не блокировать переход
     return true;
   };
 
   const handleNextStep = async () => { // Made async
     // Проверяем, является ли текущий шаг комбинированным и заполнены ли все поля
-    // Note: Step indices seem to be 0-based, so combined steps might be 2, 4, 5, 6.
-    // The original check (currentStep === 3 || currentStep === 4 || currentStep === 5) might need adjustment
-    // if questionnaireSteps array was changed. Assuming it's correct for now.
     const currentStepData = questionnaireSteps[currentStep];
     if (currentStepData.type?.startsWith("combinedStep") && !isCombinedStepComplete()) {
       alert('Пожалуйста, заполните все поля этого шага.');
       return;
     }
-    
+
     if (currentStep < questionnaireSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -290,47 +285,48 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
       setIsSubmitting(true);
       setSubmitError('');
 
-      // Включаем ответы комбинированного шага в ответы
-      const completeAnswers = [...answers];
-      // Ensure step indices align with your questionnaireSteps structure for combined answers
-      // Example: if step 2 is the first combined step (qualities, lifeAreas, summary)
-      if (questionnaireSteps[2] && questionnaireSteps[2].type === "combinedStep" && questionnaireSteps[2].sections.length === 3) {
-        completeAnswers[2] = JSON.stringify({
-          lifeAreaRatings,
-          qualities: combinedStepAnswers.qualities,
-          summary: combinedStepAnswers.summary
-        });
-      }
-      // Шаг с habitsBad и habitsGood (assuming index 4)
-      if (questionnaireSteps[4] && questionnaireSteps[4].type === "combinedStep") {
-        completeAnswers[4] = JSON.stringify({
-          habitsBad: combinedStepAnswers.habitsBad,
-          habitsGood: combinedStepAnswers.habitsGood
-        });
-      }
-      // Шаг с discipline и smallChange (assuming index 5)
-      if (questionnaireSteps[5] && questionnaireSteps[5].type === "combinedStep") {
-        completeAnswers[5] = JSON.stringify({
-          discipline: combinedStepAnswers.discipline,
-          smallChange: combinedStepAnswers.smallChange
-        });
-      }
-      // Шаг с КВДРЧ (assuming index 6)
-      if (questionnaireSteps[6] && questionnaireSteps[6].type === "combinedStepKVDRCH") {
-        completeAnswers[6] = JSON.stringify({
-          konkretna: combinedStepAnswers.konkretna,
-          vymiriuvana: combinedStepAnswers.vymiriuvana,
-          dosyazhna: combinedStepAnswers.dosyazhna,
-          relevantna: combinedStepAnswers.relevantna,
-          chasova: combinedStepAnswers.chasova
-        });
-      }
+      // Подготавливаем данные для отправки на бэкенд
+      const formData = { ...answers };
 
-      const payload = { answers: completeAnswers };
-      console.log("Submitting questionnaire with payload:", payload);
+      // Добавляем данные из комбинированных шагов, используя id шага в качестве ключа
 
+      // Шаг self_analysis - первый комбинированный шаг
+      formData.self_analysis = {
+        qualities: combinedStepAnswers.qualities,
+        lifeAreaRatings,
+        summary: combinedStepAnswers.summary
+      };
+
+      // Шаг habits_analysis - шаг с habitsBad и habitsGood
+      formData.habits_analysis = {
+        habitsBad: combinedStepAnswers.habitsBad,
+        habitsGood: combinedStepAnswers.habitsGood
+      };
+
+      // Шаг start_small - шаг с discipline и smallChange
+      formData.start_small = {
+        discipline: combinedStepAnswers.discipline,
+        smallChange: combinedStepAnswers.smallChange
+      };
+
+      // Шаг habits_impact - шаг с newValue и habitFuture
+      formData.habits_impact = {
+        newValue: combinedStepAnswers.newValue,
+        habitFuture: combinedStepAnswers.habitFuture // Используем переименованное поле, но ключ оставляем как в API
+      };
+
+      // Шаг kvdrch_formulation - шаг с КВДРЧ
+      formData.kvdrch_formulation = {
+        konkretna: combinedStepAnswers.konkretna,
+        vymiriuvana: combinedStepAnswers.vymiriuvana,
+        dosyazhna: combinedStepAnswers.dosyazhna,
+        relevantna: combinedStepAnswers.relevantna,
+        chasova: combinedStepAnswers.chasova
+      };
+
+      const { welcome, ...payload } = formData; // Удаляем поле welcome, если оно есть
       try {
-        await submitQuestionnaire(payload); // Pass the whole payload object
+        await submitQuestionnaire(payload); // Отправляем данные на бэкенд
         if (onQuestionnaireComplete) {
           onQuestionnaireComplete();
         }
@@ -368,7 +364,7 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
             <textarea
               rows={8} // Consistent large text input
               placeholder={currentStepData.placeholder}
-              value={answers[currentStep]}
+              value={answers[currentStepData.id] || ''}
               onChange={handleAnswerChange}
               className="questionnaire-textarea" // Added class for specific styling if needed
             />
@@ -418,7 +414,7 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
                         className="questionnaire-textarea"
                       />
                     </div>
-                    
+
                     {/* Вторая секция - Хорошие привычки */}
                     <div className="combined-section">
                       <h3 style={{ marginBottom: '12px' }}>{currentStepData.sections[1].title}</h3>
@@ -430,6 +426,36 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
                         placeholder={currentStepData.sections[1].placeholder}
                         value={combinedStepAnswers.habitsGood}
                         onChange={(e) => handleCombinedStepChange('habitsGood', e.target.value)}
+                        className="questionnaire-textarea"
+                      />
+                    </div>
+                  </>
+                ) : currentStepData.sections[0].fieldName === 'newValue' ? (
+                  // Шаг "Влияние привычек на жизнь" с полями newValue и smallChange
+                  <>
+                    {/* Первая секция - Влияние на жизнь */}
+                    <div className="combined-section" style={{ marginBottom: '30px' }}>
+                      <h3 style={{ marginBottom: '12px' }}>{currentStepData.sections[0].title}</h3>
+                      <textarea
+                        rows={5}
+                        placeholder={currentStepData.sections[0].placeholder}
+                        value={combinedStepAnswers.newValue}
+                        onChange={(e) => handleCombinedStepChange('newValue', e.target.value)}
+                        className="questionnaire-textarea"
+                      />
+                    </div>
+
+                    {/* Вторая секция - Актуальность в будущем */}
+                    <div className="combined-section">
+                      <h3 style={{ marginBottom: '12px' }}>{currentStepData.sections[1].title}</h3>
+                      {currentStepData.sections[1].introText && (
+                        <p style={{ marginBottom: '15px' }}>{currentStepData.sections[1].introText}</p>
+                      )}
+                      <textarea
+                        rows={5}
+                        placeholder={currentStepData.sections[1].placeholder}
+                        value={combinedStepAnswers.habitFuture}
+                        onChange={(e) => handleCombinedStepChange('habitFuture', e.target.value)}
                         className="questionnaire-textarea"
                       />
                     </div>
@@ -448,7 +474,7 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
                         className="questionnaire-textarea"
                       />
                     </div>
-                    
+
                     {/* Вторая секция - Небольшое изменение */}
                     <div className="combined-section">
                       <h3 style={{ marginBottom: '12px' }}>{currentStepData.sections[1].title}</h3>
@@ -483,15 +509,15 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
                     className="questionnaire-textarea"
                   />
                 </div>
-                
+
                 {/* Вторая секция - Оценка жизненных сфер */}
                 <div className="combined-section" style={{ marginBottom: '30px' }}>
                   <h3 style={{ marginBottom: '12px' }}>{currentStepData.sections[1].title}</h3>
                   <p style={{ marginBottom: '15px' }}>{currentStepData.sections[1].introText}</p>
                   <div className="life-areas-container" style={{ marginBottom: '20px' }}>
-                    {lifeAreas.map((area) => (
-                      <div key={area.id} className="life-area-item" style={{ 
-                        display: 'flex', 
+                    {lifeAreas.map((area, ind) => (
+                      <div key={area.id} className="life-area-item" style={{
+                        display: 'flex',
                         alignItems: 'center',
                         marginBottom: '12px',
                         padding: '8px',
@@ -524,7 +550,7 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
                     </p>
                   )}
                 </div>
-                
+
                 {/* Третья секция - Обобщение результатов */}
                 <div className="combined-section">
                   <h3 style={{ marginBottom: '12px' }}>{currentStepData.sections[2].title}</h3>
@@ -546,8 +572,8 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
           <div className="section life-areas-section">
             <div className="life-areas-container" style={{ marginBottom: '20px' }}>
               {lifeAreas.map((area) => (
-                <div key={area.id} className="life-area-item" style={{ 
-                  display: 'flex', 
+                <div key={area.id} className="life-area-item" style={{
+                  display: 'flex',
                   alignItems: 'center',
                   marginBottom: '12px',
                   padding: '8px',
@@ -596,11 +622,11 @@ const QuestionnairePage = ({ onQuestionnaireComplete }) => {
             type="button"
             className="submit-button"
             onClick={handleNextStep}
-            disabled={(currentStepData.needsInput && currentStepData.type !== "combinedStep" && answers[currentStep].trim() === '') || 
-                      (currentStepData.type === "lifeAreas" && !isLifeAreasStepComplete()) ||
-                      (currentStepData.type === "combinedStep" && !isCombinedStepComplete()) ||
-                      (currentStep === questionnaireSteps.length - 1 && isSubmitting) // Disable on last step if submitting
-          }
+            disabled={(currentStepData.needsInput && currentStepData.type !== "combinedStep" && (!answers[currentStepData.id] || answers[currentStepData.id].trim() === '')) ||
+              (currentStepData.type === "lifeAreas" && !isLifeAreasStepComplete()) ||
+              (currentStepData.type === "combinedStep" && !isCombinedStepComplete()) ||
+              (currentStep === questionnaireSteps.length - 1 && isSubmitting) // Disable on last step if submitting
+            }
           >
             {currentStep === questionnaireSteps.length - 1
               ? (isSubmitting ? 'Отправка...' : 'Завершить')

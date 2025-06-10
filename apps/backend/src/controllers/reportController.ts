@@ -1,7 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { db } from '../db';
+import { db } from '../db/index';
 import { dailyReports } from '../db/schema';
 import { z } from 'zod';
+import { sql } from 'drizzle-orm';
 
 // Zod schema for habit objects
 const habitSchema = z.object({
@@ -23,10 +24,8 @@ const dailyReportBodySchema = z.object({
 
 export const saveDailyReportHandler = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
-    if (!request.session.userId) {
-      return reply.status(401).send({ message: 'Unauthorized: User not logged in.' });
-    }
-    const userId = request.session.userId;
+    // Авторизация уже проверена в middleware, userId точно существует
+    const userId = request.session.userId!;
 
     const parsedBody = dailyReportBodySchema.safeParse(request.body);
 
@@ -44,7 +43,7 @@ export const saveDailyReportHandler = async (request: FastifyRequest, reply: Fas
       .select()
       .from(dailyReports)
       .where(
-        db.sql`${dailyReports.userId} = ${userId} AND ${dailyReports.date} = ${date}`
+        sql`${dailyReports.userId} = ${userId} AND ${dailyReports.date} = ${date}`
       )
       .limit(1);
 

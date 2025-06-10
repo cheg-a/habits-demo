@@ -10,7 +10,7 @@ function formatDate(date) {
   return `${day}/${month}/${year}`;
 }
 
-const WeeklyReportPage = () => {
+const WeeklyReportPage = ({ weekNum }) => {
   const questions = [
     "Какие главные достижения были на этой неделе в контексте ваших привычек?",
     "Какие препятствия возникли на пути к формированию привычек?",
@@ -20,14 +20,14 @@ const WeeklyReportPage = () => {
     "Какие корректировки вы планируете внести в свои привычки на следующей неделе?",
     "Общая оценка вашей недели по шкале от 1 до 10 (где 10 - отлично)."
   ];
-  
+
   const today = formatDate(new Date());
 
   return (
     <div className="app-container">
       <form className="habit-journal">
         <div className="journal-header">
-          <h1 className="journal-title">Еженедельный отчет</h1>
+          <h1 className="journal-title">Еженедельный отчет #{weekNum || '?'}</h1>
           <div className="journal-date">{today}</div>
         </div>
         {questions.map((question, index) => (
@@ -36,7 +36,7 @@ const WeeklyReportPage = () => {
             <textarea
               rows={3}
               placeholder="Ваш ответ..."
-              // onChange={(e) => handleInputChange(index, e.target.value)} // State handling will be added later
+            // onChange={(e) => handleInputChange(index, e.target.value)} // State handling will be added later
             />
           </div>
         ))}
