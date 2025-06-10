@@ -23,7 +23,7 @@ const buildApp = () => {
   });
 
   app.register(fastifyCors, {
-    origin: "https://habit-production-f124.up.railway.app",
+    origin: ["https://habit-mvp.up.railway.app", "https://cheg-a.github.io"], // Allow requests from these origins
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
