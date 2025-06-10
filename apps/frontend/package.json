@@ -5,8 +5,6 @@
   "type": "module",
   "homepage": "https://cheg-a.github.io/habits-demo",
   "scripts": {
-    "predeploy": "pnpm run build",
-    "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",

@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/<repository-name>/',
   plugins: [react()],
+  base: '/habits-demo/',
   server: {
     allowedHosts: ['habbit.local'], // Добавляем разрешенные хосты
     proxy: {
