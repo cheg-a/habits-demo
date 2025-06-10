@@ -23,7 +23,7 @@ const buildApp = () => {
   });
 
   app.register(fastifyCors, {
-    origin: ["https://*.up.railway.app"],
+    origin: "https://habit-production-f124.up.railway.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -45,14 +45,14 @@ const buildApp = () => {
     secret: sessionSecret,
     cookieName: "sessionId", // Optional: customize session cookie name
     cookie: {
-      domain: "up.railway.app", // Убедитесь, что домен соответствует вашему приложению
+      // domain: "up.railway.app", // Убедитесь, что домен соответствует вашему приложению
       secure: true, // Должно быть true если sameSite: 'none'
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      sameSite: "strict", // Важно для кросс-доменных запросов
+      sameSite: "none", // Важно для кросс-доменных запросов
       path: "/", // Убедимся, что куки доступны для всех путей
     },
-    saveUninitialized: false,
+    // saveUninitialized: false,
   });
 
   // Применяем middleware для проверки авторизации
