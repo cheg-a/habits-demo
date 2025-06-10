@@ -38,10 +38,10 @@ const buildApp = () => {
     secret: sessionSecret,
     cookieName: "sessionId", // Optional: customize session cookie name
     cookie: {
-      secure: true, // Должно быть true если sameSite: 'none'
+      secure: false, // Должно быть true если sameSite: 'none'
       // httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      sameSite: "none", // Важно для кросс-доменных запросов
+      sameSite: "lax", // Важно для кросс-доменных запросов
       path: "/", // Убедимся, что куки доступны для всех путей
     },
     saveUninitialized: false,
@@ -84,7 +84,7 @@ const buildApp = () => {
   });
 
   app.register(fastifyCors, {
-    origin: ["*"],
+    origin: ["https://cheg-a.github.io"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
