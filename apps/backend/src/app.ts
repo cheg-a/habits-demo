@@ -22,6 +22,13 @@ const buildApp = () => {
     logger: true, // Basic logging, can be configured further
   });
 
+  app.register(fastifyCors, {
+    origin: ["https://cheg-a.github.io"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  });
+
   // Register cookie plugin
   app.register(fastifyCookie);
 
@@ -39,7 +46,7 @@ const buildApp = () => {
     cookieName: "sessionId", // Optional: customize session cookie name
     cookie: {
       secure: true, // Должно быть true если sameSite: 'none'
-      httpOnly: false,
+      httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
       sameSite: "none", // Важно для кросс-доменных запросов
       path: "/", // Убедимся, что куки доступны для всех путей
@@ -81,13 +88,6 @@ const buildApp = () => {
       // Optionally, include error code or name if useful and safe
       // error: error.name
     });
-  });
-
-  app.register(fastifyCors, {
-    origin: ["https://cheg-a.github.io"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
   });
 
   return app;
