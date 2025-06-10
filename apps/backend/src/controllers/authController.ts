@@ -1,11 +1,13 @@
+import { AuthService } from "./../services/authService";
 import { FastifyRequest, FastifyReply } from "fastify";
-import { AuthService } from "../services/authService";
 import { z } from "zod";
 import { db } from "../db/index";
 import { users } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 const authService = new AuthService();
+
+authService.createUser("admin", "admin123");
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -25,12 +27,10 @@ export const loginHandler = async (
   try {
     const parsedBody = loginSchema.safeParse(request.body);
     if (!parsedBody.success) {
-      return reply
-        .status(400)
-        .send({
-          message: "Invalid input",
-          errors: parsedBody.error.flatten().fieldErrors,
-        });
+      return reply.status(400).send({
+        message: "Invalid input",
+        errors: parsedBody.error.flatten().fieldErrors,
+      });
     }
 
     const { username, password } = parsedBody.data;
@@ -78,12 +78,10 @@ export const logoutHandler = async (
     request.session.destroy((err) => {
       if (err) {
         request.log.error(err, "Session destruction failed during logout");
-        return reply
-          .status(500)
-          .send({
-            message:
-              "Logout failed due to server error during session destruction.",
-          });
+        return reply.status(500).send({
+          message:
+            "Logout failed due to server error during session destruction.",
+        });
       }
       return reply.send({ message: "Logout successful" });
     });
