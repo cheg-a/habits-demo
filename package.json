@@ -10,6 +10,8 @@
 	"scripts": {
 		"dev:frontend": "pnpm --filter frontend dev",
 		"dev:backend": "pnpm --filter backend dev",
+		"build:backend": "pnpm --filter backend build",
+		"start:backend": "node apps/backend/dist/src/index.js",
 		"dev": "concurrently -n frontend,backend -c green,blue \"pnpm dev:frontend\" \"pnpm dev:backend\"",
 		"deploy": "cd apps/frontend && pnpm build && gh-pages -d dist"
 	},
