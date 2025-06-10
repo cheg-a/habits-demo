@@ -86,13 +86,13 @@ const buildApp = () => {
   app.register(fastifyCors, {
     origin: [
       "http://habbit.local:5173",
-      "cheg-a.github.io",
-      "habits-demo-production.up.railway.app",
-      "cheg-a.github.io/habits-demo", // Добавляем GitHub Pages
-    ], // Разрешаем оба варианта для фронтенда
+      "https://cheg-a.github.io",
+      "https://habits-demo-production.up.railway.app",
+      "https://cheg-a.github.io/habits-demo",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // Важно для поддержки куки!
+    credentials: true,
   });
 
   return app;
