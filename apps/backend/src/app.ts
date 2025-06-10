@@ -38,10 +38,10 @@ const buildApp = () => {
     secret: sessionSecret,
     cookieName: "sessionId", // Optional: customize session cookie name
     cookie: {
-      secure: false, // Должно быть true если sameSite: 'none'
-      httpOnly: false,
+      secure: true, // Должно быть true если sameSite: 'none'
+      // httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      sameSite: "lax", // Важно для кросс-доменных запросов
+      sameSite: "none", // Важно для кросс-доменных запросов
       path: "/", // Убедимся, что куки доступны для всех путей
     },
     saveUninitialized: false,
@@ -84,7 +84,12 @@ const buildApp = () => {
   });
 
   app.register(fastifyCors, {
-    origin: ["http://habbit.local:5173", "https://cheg-a.github.io"], // Разрешаем оба варианта для фронтенда
+    origin: [
+      "http://habbit.local:5173",
+      "https://cheg-a.github.io",
+      "https://habits-demo-production.up.railway.app",
+      "https://cheg-a.github.io/habits-demo", // Добавляем GitHub Pages
+    ], // Разрешаем оба варианта для фронтенда
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Важно для поддержки куки!
