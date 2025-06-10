@@ -23,7 +23,7 @@ const buildApp = () => {
   });
 
   app.register(fastifyCors, {
-    origin: ["https://cheg-a.github.io"],
+    origin: ["https://*.up.railway.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -45,10 +45,11 @@ const buildApp = () => {
     secret: sessionSecret,
     cookieName: "sessionId", // Optional: customize session cookie name
     cookie: {
-      secure: false, // Должно быть true если sameSite: 'none'
+      domain: "up.railway.app", // Убедитесь, что домен соответствует вашему приложению
+      secure: true, // Должно быть true если sameSite: 'none'
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      sameSite: "lax", // Важно для кросс-доменных запросов
+      sameSite: "strict", // Важно для кросс-доменных запросов
       path: "/", // Убедимся, что куки доступны для всех путей
     },
     saveUninitialized: false,
