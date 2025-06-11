@@ -170,7 +170,7 @@ export const updatePassword = async (newPassword) => {
 
 // Функция для получения сводных данных профиля пользователя
 export const getProfileSummaryData = async () => {
-  const response = await fetch(\`\${BASE_URL}/api/user/profile-summary\`, { // Corrected to use BASE_URL and direct fetch
+  const response = await fetch(`${BASE_URL}/api/user/profile-summary`, { // Corrected to use BASE_URL and direct fetch
     method: "GET",
     headers: {
       // "Content-Type": "application/json", // Not typically needed for GET if no body is sent
@@ -181,7 +181,25 @@ export const getProfileSummaryData = async () => {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ message: 'Failed to fetch profile summary and error response is not valid JSON' }));
-    throw new Error(errorData.message || \`HTTP error! status: \${response.status}\`);
+    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
   }
   return response.json(); // Возвращаем распарсенный JSON
+};
+
+export const getMonthlyDailyReports = async (month, year) => {
+  const response = await fetch(`${BASE_URL}/reports/daily/monthly?month=${month}&year=${year}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // Добавляем для поддержки куки
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ 
+      message: 'Failed to fetch monthly daily reports and error response is not valid JSON' 
+    }));
+    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+  }
+  return response.json();
 };

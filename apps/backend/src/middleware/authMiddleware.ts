@@ -6,6 +6,7 @@ export interface UserPayload {
   // Можно добавить другие поля пользователя, если они нужны в request.user
 }
 
+// @ts-ignore
 export interface AuthenticatedRequest extends FastifyRequest {
   user?: UserPayload;
   session: {

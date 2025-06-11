@@ -632,10 +632,6 @@ input[type='radio']:checked::after {
 .form-actions.questionnaire-actions {
     justify-content: space-between;
 }
-.form-actions.questionnaire-actions .submit-button { /* Keep original submit button styling */
-    /* No change needed if .submit-button is already well-defined */
-}
-
 
 @keyframes pulse {
   0% {
@@ -815,93 +811,7 @@ input[type='radio']:checked::after {
 }
 
 /* === Profile Page Specific Styles === */
-.profile-page-container {
-  max-width: 900px;
-  margin: 30px auto; /* Увеличили отступ сверху/снизу */
-  padding: 20px;
-  background-color: #f4f7f6; /* Слегка измененный фон страницы */
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08); /* Более выраженная тень */
-  font-family: 'Helvetica Neue', Arial, sans-serif; /* Более современный шрифт */
-}
-
-.profile-page-container .journal-header {
-  padding-bottom: 15px;
-  margin-bottom: 25px;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.profile-page-container .journal-title {
-  color: #2c3e50; /* Более темный, насыщенный цвет для заголовка страницы */
-  font-size: 2em; /* Крупнее */
-  text-align: center;
-  margin-bottom: 5px; /* Уменьшен отступ под заголовком, если есть подзаголовок */
-}
-
-.profile-username {
-  font-size: 1em; /* Скорректирован размер */
-  color: #555e68; /* Немного темнее */
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 20px;
-}
-
-.profile-section {
-  background-color: #ffffff;
-  padding: 25px; /* Увеличены внутренние отступы */
-  margin-bottom: 25px; /* Увеличен отступ между секциями */
-  border-radius: 10px; /* Более скругленные углы */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Мягкая тень для каждой секции */
-  border: 1px solid #e8e8e8; /* Тонкая рамка */
-}
-
-.profile-section .section-title {
-  margin-top: 0;
-  color: #34495e; /* Цвет заголовков секций */
-  font-size: 1.4em; /* Размер заголовков секций */
-  border-bottom: 2px solid #3498db; /* Акцентная линия под заголовком секции */
-  padding-bottom: 10px;
-  margin-bottom: 20px; /* Отступ под заголовком секции */
-}
-
-.profile-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Слегка увеличена минимальная ширина колонки */
-  gap: 25px; /* Увеличен промежуток */
-}
-
-.profile-info-grid div strong {
-  color: #2c3e50; /* Цвет для выделенного текста (названий полей) */
-  display: block;
-  margin-bottom: 8px; /* Отступ под strong */
-}
-
-.profile-info-grid div p,
-.profile-info-grid div ul {
-  color: #555e68; /* Основной цвет текста */
-  font-size: 0.95em;
-  line-height: 1.6; /* Улучшена читаемость */
-}
-
-.profile-info-grid div ul {
-  list-style-type: none; /* Убрали стандартные маркеры */
-  padding-left: 0;
-}
-
-.profile-info-grid div ul li {
-  padding-left: 18px;
-  position: relative;
-  margin-bottom: 5px;
-}
-
-.profile-info-grid div ul li::before {
-  content: "•"; /* Кастомный маркер */
-  color: #3498db; /* Цвет маркера */
-  font-size: 1.2em;
-  position: absolute;
-  left: 0;
-  top: -2px; /* Небольшая коррекция положения */
-}
+/* Стили профиля перенесены в стилизованные компоненты Material UI */
 
 
 .habit-progress-item {
@@ -1046,3 +956,5 @@ input[type='radio']:checked::after {
     gap: 20px;
   }
 }
+
+/* Стили для календаря перенесены в стилизованные компоненты Material UI */

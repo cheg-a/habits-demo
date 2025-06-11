@@ -79,7 +79,6 @@ const DailyReportPage = () => {
     // setSubmitted(false); // Optional: clear "Отправлено ✓" immediately on new submit
 
     const data = {
-      date: today,
       gratitude,
       goal,
       motivation,

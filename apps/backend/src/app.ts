@@ -11,6 +11,9 @@ import * as dotenv from "dotenv";
 
 dotenv.config(); // Load .env file
 
+const sessionSettinsMap = new Map<string, any>()
+  .set("development", { secure: false, sameSite: "lax" })
+  .set("production", { secure: true, sameSite: "none" });
 // Define a type for our session data
 declare module "fastify" {
   interface Session {
@@ -24,7 +27,11 @@ const buildApp = () => {
   });
 
   app.register(fastifyCors, {
-    origin: ["https://habit-mvp.up.railway.app", "https://cheg-a.github.io"], // Allow requests from these origins
+    origin: [
+      "https://habit-mvp.up.railway.app",
+      "https://cheg-a.github.io",
+      "http://habbit.local:5173",
+    ], // Allow requests from these origins
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -42,15 +49,18 @@ const buildApp = () => {
     process.exit(1);
   }
 
+  const sessionSettings = sessionSettinsMap.get(
+    process.env.NODE_ENV || "development",
+  );
+
   app.register(fastifySession, {
     secret: sessionSecret,
     cookieName: "sessionId", // Optional: customize session cookie name
     cookie: {
       // domain: "up.railway.app", // Убедитесь, что домен соответствует вашему приложению
-      secure: true, // Должно быть true если sameSite: 'none'
+      ...sessionSettings,
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      sameSite: "none", // Важно для кросс-доменных запросов
       path: "/", // Убедимся, что куки доступны для всех путей
     },
     // saveUninitialized: false,

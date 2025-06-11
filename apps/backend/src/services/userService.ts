@@ -1,4 +1,4 @@
-import db from "../db";
+import { db } from "../db/index";
 import { questionnaires, dailyReports, weeklyReports, users } from "../db/schema";
 import { eq, desc, sql, and, gte, asc } from "drizzle-orm"; // Добавили asc для сортировки
 import { alias } from 'drizzle-orm/pg-core';
@@ -55,8 +55,6 @@ function isHabitCompletedInReport(reportHabits: any, habitName: string): boolean
 }
 
 export async function getProfileSummary(userId: number): Promise<ProfileSummaryResponse | null> {
-  console.log(`Запрос данных профиля (с сериями) для пользователя ${userId}`);
-
   const userQuery = await db.select({ userName: users.username }).from(users).where(eq(users.id, userId)).limit(1).execute();
   const userName = userQuery.length > 0 ? userQuery[0].userName : null;
 
@@ -80,18 +78,18 @@ export async function getProfileSummary(userId: number): Promise<ProfileSummaryR
         values = answers.self_analysis.summary.slice(0, 3);
       }
     } else if (answers.qualities) {
-        if (Array.isArray(answers.qualities)) values = answers.qualities.slice(0,3);
-        else if (typeof answers.qualities === 'string') values = answers.qualities.split(',').map((s:string) => s.trim()).slice(0,3);
+      if (Array.isArray(answers.qualities)) values = answers.qualities.slice(0, 3);
+      else if (typeof answers.qualities === 'string') values = answers.qualities.split(',').map((s: string) => s.trim()).slice(0, 3);
     }
     let habitsToTrack: string[] = [];
     if (answers.habits_analysis && answers.habits_analysis.habitsGood) {
-       if (typeof answers.habits_analysis.habitsGood === 'string') {
+      if (typeof answers.habits_analysis.habitsGood === 'string') {
         habitsToTrack = answers.habits_analysis.habitsGood.split(',').map((s: string) => s.trim());
       } else if (Array.isArray(answers.habits_analysis.habitsGood)) {
         habitsToTrack = answers.habits_analysis.habitsGood;
       }
     } else if (answers.kvdrch_formulation && answers.kvdrch_formulation.konkretna) {
-        habitsToTrack = [answers.kvdrch_formulation.konkretna];
+      habitsToTrack = [answers.kvdrch_formulation.konkretna];
     }
     questionnaireSummary = {
       mainGoal: typeof mainGoal === 'string' ? mainGoal : (typeof mainGoal === 'object' && mainGoal?.goal_setting ? mainGoal.goal_setting : 'Цель не указана'),
@@ -122,14 +120,14 @@ export async function getProfileSummary(userId: number): Promise<ProfileSummaryR
 
     // Получаем все отчеты пользователя, отсортированные от НОВОГО К СТАРОМУ для расчета % выполнения за 30 дней
     const reportsForCompletionRate = await db
-        .select({ habits: dailyReports.habits, date: dailyReports.date })
-        .from(dailyReports)
-        .where(and(
-            eq(dailyReports.userId, userId),
-            gte(dailyReports.date, thirtyDaysAgoFormatted)
-        ))
-        .orderBy(desc(dailyReports.date))
-        .execute();
+      .select({ habits: dailyReports.habits, date: dailyReports.date })
+      .from(dailyReports)
+      .where(and(
+        eq(dailyReports.userId, userId),
+        gte(dailyReports.date, thirtyDaysAgoFormatted)
+      ))
+      .orderBy(desc(dailyReports.date))
+      .execute();
 
     for (const habitName of habitsToQuery) {
       // Расчет % выполнения за последние 30 дней
@@ -137,14 +135,14 @@ export async function getProfileSummary(userId: number): Promise<ProfileSummaryR
       let totalRelevantReportsInPeriod = 0;
       reportsForCompletionRate.forEach(report => {
         if (new Date(report.date) >= thirtyDaysAgo) { // Убедимся, что отчет в пределах 30 дней
-            const dailyHabits = report.habits as Array<{ text: string; completed: boolean; problem: boolean }>;
-            const targetHabitEntry = dailyHabits?.find(h => h.text === habitName);
-            if (targetHabitEntry) {
-                totalRelevantReportsInPeriod++;
-                if (targetHabitEntry.completed) {
-                    completedCount++;
-                }
+          const dailyHabits = report.habits as Array<{ text: string; completed: boolean; problem: boolean }>;
+          const targetHabitEntry = dailyHabits?.find(h => h.text === habitName);
+          if (targetHabitEntry) {
+            totalRelevantReportsInPeriod++;
+            if (targetHabitEntry.completed) {
+              completedCount++;
             }
+          }
         }
       });
       const completionRate = totalRelevantReportsInPeriod > 0 ? Math.round((completedCount / totalRelevantReportsInPeriod) * 100) : 0;
@@ -164,15 +162,15 @@ export async function getProfileSummary(userId: number): Promise<ProfileSummaryR
         } else {
           // Если привычка не найдена в отчете или не выполнена, серия прерывается
           // (для самой последней серии)
-           const dailyHabits = report.habits as Array<{ text: string; completed: boolean; problem: boolean }>;
-           if (dailyHabits?.find(h => h.text === habitName)) { // Если привычка была в отчете, но не выполнена
-             break;
-           }
-           // Если привычки просто не было в отчете за этот день, можно либо прерывать серию,
-           // либо пропускать этот день (зависит от требований). Сейчас - прерываем.
-           // break; // Раскомментировать, если отсутствие привычки в отчете прерывает серию.
-                     // Если закомментировано, то дни без упоминания привычки не прерывают серию выполненных.
-                     // Для строгого streak - нужно прерывать.
+          const dailyHabits = report.habits as Array<{ text: string; completed: boolean; problem: boolean }>;
+          if (dailyHabits?.find(h => h.text === habitName)) { // Если привычка была в отчете, но не выполнена
+            break;
+          }
+          // Если привычки просто не было в отчете за этот день, можно либо прерывать серию,
+          // либо пропускать этот день (зависит от требований). Сейчас - прерываем.
+          // break; // Раскомментировать, если отсутствие привычки в отчете прерывает серию.
+          // Если закомментировано, то дни без упоминания привычки не прерывают серию выполненных.
+          // Для строгого streak - нужно прерывать.
         }
       }
 
@@ -248,21 +246,29 @@ export async function getProfileSummary(userId: number): Promise<ProfileSummaryR
 
   let lastWeeklyReport: ReportLink | null = null;
   const lastWeeklyReportQuery = await db
-    .select({ id: weeklyReports.id, weekNumber: weeklyReports.weekNumber, answers: weeklyReports.answers })
+    .select()
     .from(weeklyReports)
     .where(eq(weeklyReports.userId, userId))
     .orderBy(desc(weeklyReports.createdAt))
     .limit(1)
     .execute();
 
+  const countWeeklyReports = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(weeklyReports)
+    .where(eq(weeklyReports.userId, userId))
+    .limit(1)
+    .execute();
+
+
   if (lastWeeklyReportQuery.length > 0) {
     const report = lastWeeklyReportQuery[0];
-    const answers = report.answers as any;
-    const achievement = answers?.successfulStrategies || answers?.keyAchievement || "Достижения не указаны";
+    const answers = report.changes as any;
+    const achievement = report?.successfulStrategies || report?.successfulStrategies || "Достижения не указаны";
     lastWeeklyReport = {
       id: report.id,
-      weekNumber: report.weekNumber,
-      keyAchievement: typeof achievement === 'string' ? achievement.substring(0,100) : "Информация отсутствует",
+      weekNumber: countWeeklyReports[0].count,
+      keyAchievement: typeof achievement === 'string' ? achievement.substring(0, 100) : "Информация отсутствует",
     };
   }
 
