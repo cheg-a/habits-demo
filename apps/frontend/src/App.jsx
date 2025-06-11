@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import WeeklyReportPage from './pages/WeeklyReportPage';
 import QuestionnairePage from './pages/QuestionnairePage';
 import UpdatePasswordPage from './pages/UpdatePasswordPage'; // Импортируем страницу обновления пароля
+import ProfilePage from './pages/ProfilePage'; // Импортируем страницу профиля
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Default: not logged in
@@ -111,6 +112,7 @@ function App() {
                       {dailyReport && dailyReport.number % 7 === 0 && (
                         <li><Link to="/weekly-report">Еженедельный отчет</Link></li>
                       )}
+                  <li><Link to="/profile">Мой профиль</Link></li>
                       <li><button onClick={handleLogout} className="logout-button">Выйти</button></li>
                     </ul>
                   </nav>
@@ -127,6 +129,7 @@ function App() {
                         } />
                       )}
                       {/* Optional: Redirect from /login or /questionnaire to / if user tries to access them again */}
+                  <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/login" element={<Navigate to="/" replace />} />
                       <Route path="/questionnaire" element={<Navigate to="/" replace />} />
                       {/* Fallback for any other route, could be a 404 page or redirect to / */}

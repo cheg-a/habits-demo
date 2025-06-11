@@ -167,3 +167,21 @@ export const updatePassword = async (newPassword) => {
   }
   return response.json();
 };
+
+// Функция для получения сводных данных профиля пользователя
+export const getProfileSummaryData = async () => {
+  const response = await fetch(\`\${BASE_URL}/api/user/profile-summary\`, { // Corrected to use BASE_URL and direct fetch
+    method: "GET",
+    headers: {
+      // "Content-Type": "application/json", // Not typically needed for GET if no body is sent
+      // Аутентификация (токен) должна обрабатываться через credentials: 'include' для cookies
+    },
+    credentials: 'include', // Важно для передачи куки для аутентификации
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: 'Failed to fetch profile summary and error response is not valid JSON' }));
+    throw new Error(errorData.message || \`HTTP error! status: \${response.status}\`);
+  }
+  return response.json(); // Возвращаем распарсенный JSON
+};

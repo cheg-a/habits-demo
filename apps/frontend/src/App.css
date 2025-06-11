@@ -813,3 +813,236 @@ input[type='radio']:checked::after {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* === Profile Page Specific Styles === */
+.profile-page-container {
+  max-width: 900px;
+  margin: 30px auto; /* Увеличили отступ сверху/снизу */
+  padding: 20px;
+  background-color: #f4f7f6; /* Слегка измененный фон страницы */
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08); /* Более выраженная тень */
+  font-family: 'Helvetica Neue', Arial, sans-serif; /* Более современный шрифт */
+}
+
+.profile-page-container .journal-header {
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.profile-page-container .journal-title {
+  color: #2c3e50; /* Более темный, насыщенный цвет для заголовка страницы */
+  font-size: 2em; /* Крупнее */
+  text-align: center;
+  margin-bottom: 5px; /* Уменьшен отступ под заголовком, если есть подзаголовок */
+}
+
+.profile-username {
+  font-size: 1em; /* Скорректирован размер */
+  color: #555e68; /* Немного темнее */
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.profile-section {
+  background-color: #ffffff;
+  padding: 25px; /* Увеличены внутренние отступы */
+  margin-bottom: 25px; /* Увеличен отступ между секциями */
+  border-radius: 10px; /* Более скругленные углы */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Мягкая тень для каждой секции */
+  border: 1px solid #e8e8e8; /* Тонкая рамка */
+}
+
+.profile-section .section-title {
+  margin-top: 0;
+  color: #34495e; /* Цвет заголовков секций */
+  font-size: 1.4em; /* Размер заголовков секций */
+  border-bottom: 2px solid #3498db; /* Акцентная линия под заголовком секции */
+  padding-bottom: 10px;
+  margin-bottom: 20px; /* Отступ под заголовком секции */
+}
+
+.profile-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Слегка увеличена минимальная ширина колонки */
+  gap: 25px; /* Увеличен промежуток */
+}
+
+.profile-info-grid div strong {
+  color: #2c3e50; /* Цвет для выделенного текста (названий полей) */
+  display: block;
+  margin-bottom: 8px; /* Отступ под strong */
+}
+
+.profile-info-grid div p,
+.profile-info-grid div ul {
+  color: #555e68; /* Основной цвет текста */
+  font-size: 0.95em;
+  line-height: 1.6; /* Улучшена читаемость */
+}
+
+.profile-info-grid div ul {
+  list-style-type: none; /* Убрали стандартные маркеры */
+  padding-left: 0;
+}
+
+.profile-info-grid div ul li {
+  padding-left: 18px;
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.profile-info-grid div ul li::before {
+  content: "•"; /* Кастомный маркер */
+  color: #3498db; /* Цвет маркера */
+  font-size: 1.2em;
+  position: absolute;
+  left: 0;
+  top: -2px; /* Небольшая коррекция положения */
+}
+
+
+.habit-progress-item {
+  margin-bottom: 20px;
+}
+
+.habit-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px; /* Отступ перед прогресс-баром */
+  font-size: 1em;
+  color: #333;
+}
+
+.habit-progress-header strong { /* Процент выполнения */
+  color: #27ae60; /* Зеленый для процентов */
+}
+
+.habit-streak {
+  font-weight: bold;
+  color: #e67e22; /* Более насыщенный оранжевый для серии */
+  font-size: 0.9em;
+  margin-left: 10px;
+  background-color: #fdf2e2; /* Легкий фон для выделения */
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.progress-bar-container {
+  width: 100%;
+  background-color: #ecf0f1; /* Более светлый фон для контейнера прогресс-бара */
+  border-radius: 8px; /* Скругление */
+  height: 22px; /* Немного выше */
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* Внутренняя тень */
+}
+
+.progress-bar {
+  background-color: #2ecc71; /* Яркий зеленый для прогресса */
+  height: 100%;
+  border-radius: 8px; /* Синхронизируем с контейнером */
+  transition: width 0.6s ease-in-out;
+  display: flex; /* Для возможного добавления текста на прогресс-бар */
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+/* Если хотим текст на прогресс-баре (нужно будет передавать value в компонент) */
+/* .progress-bar::after {
+  content: attr(data-value) "%";
+} */
+
+
+/* Ссылка "Изменить пароль" */
+.profile-section a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.profile-section a:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+/* Общие стили для загрузки и ошибок */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px; /* Чтобы было видно на пустой странице */
+  color: #555;
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3; /* Light grey */
+  border-top: 4px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  text-align: center;
+  padding: 30px 20px;
+  color: #c0392b; /* Темно-красный для ошибок */
+  background-color: #fbecea;
+  border: 1px solid #e8b3b0;
+  border-radius: 8px;
+}
+
+/* Footer стили */
+.app-footer { /* Предполагаем, что он есть и используется */
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #7f8c8d;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Стили для отступов, если ProfilePage не вложена в App.jsx с его отступами */
+/* body .profile-page-container.app-container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+} */
+
+/* Медиа-запрос для улучшения адаптивности */
+@media (max-width: 768px) {
+  .profile-page-container {
+    margin: 20px 15px; /* Уменьшаем отступы по бокам */
+    padding: 15px;
+  }
+
+  .profile-page-container .journal-title {
+    font-size: 1.8em;
+  }
+
+  .profile-section {
+    padding: 20px;
+  }
+
+  .profile-section .section-title {
+    font-size: 1.3em;
+  }
+
+  .profile-info-grid {
+    grid-template-columns: 1fr; /* Одна колонка на мобильных */
+    gap: 20px;
+  }
+}

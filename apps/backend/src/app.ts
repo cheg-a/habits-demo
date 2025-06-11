@@ -5,6 +5,7 @@ import fastifySession from "@fastify/session";
 import authRoutes from "./routes/authRoutes";
 import questionnaireRoutes from "./routes/questionnaireRoutes"; // Import questionnaire routes
 import reportRoutes from "./routes/reportRoutes"; // Import report routes
+import userRoutes from "./routes/userRoutes"; // Import user routes
 import { withAuth } from "./middleware/authMiddleware"; // Импортируем функцию для настройки авторизации
 import * as dotenv from "dotenv";
 
@@ -61,6 +62,7 @@ const buildApp = () => {
   app.register(authRoutes, { prefix: "/auth" }); // Register auth routes under /auth prefix
   app.register(questionnaireRoutes, { prefix: "/questionnaire" }); // Register questionnaire routes
   app.register(reportRoutes, { prefix: "/reports" }); // Register report routes
+  app.register(userRoutes, { prefix: "/api/user" }); // Префикс для пользовательских роутов
 
   // Placeholder for routes
   app.get("/", async (request, reply) => {
