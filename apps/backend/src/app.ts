@@ -1,11 +1,15 @@
 import Fastify from "fastify";
+import path from "path";
 import fastifyCors from "@fastify/cors";
 import fastifyCookie from "@fastify/cookie";
 import fastifySession from "@fastify/session";
+import fastifyMultipart from "@fastify/multipart";
+import fastifyStatic from "@fastify/static";
 import authRoutes from "./routes/authRoutes";
 import questionnaireRoutes from "./routes/questionnaireRoutes"; // Import questionnaire routes
 import reportRoutes from "./routes/reportRoutes"; // Import report routes
 import userRoutes from "./routes/userRoutes"; // Import user routes
+import photoRoutes from "./routes/photoRoutes";
 import { withAuth } from "./middleware/authMiddleware"; // Импортируем функцию для настройки авторизации
 import * as dotenv from "dotenv";
 
@@ -39,6 +43,11 @@ const buildApp = () => {
 
   // Register cookie plugin
   app.register(fastifyCookie);
+  app.register(fastifyMultipart);
+  app.register(fastifyStatic, {
+    root: path.join(process.cwd(), 'uploads'),
+    prefix: '/uploads/',
+  });
 
   // Register session plugin
   const sessionSecret = process.env.SESSION_SECRET;
@@ -73,6 +82,7 @@ const buildApp = () => {
   app.register(questionnaireRoutes, { prefix: "/questionnaire" }); // Register questionnaire routes
   app.register(reportRoutes, { prefix: "/reports" }); // Register report routes
   app.register(userRoutes, { prefix: "/api/user" }); // Префикс для пользовательских роутов
+  app.register(photoRoutes, { prefix: "/photos" });
 
   // Placeholder for routes
   app.get("/", async (request, reply) => {

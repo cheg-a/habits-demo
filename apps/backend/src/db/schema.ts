@@ -94,12 +94,27 @@ export const weeklyReports = pgTable(
   },
 );
 
+export const photos = pgTable("photos", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  city: text("city"),
+  latitude: numeric("latitude"),
+  longitude: numeric("longitude"),
+  description: text("description").notNull(),
+  category: text("category"),
+  filePath: text("file_path").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Define relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(profiles, { fields: [users.id], references: [profiles.userId] }),
   dailyReports: many(dailyReports),
   weeklyReports: many(weeklyReports),
   questionnaires: many(questionnaires), // Added relation to questionnaires
+  photos: many(photos),
 }));
 
 export const profilesRelations = relations(profiles, ({ one }) => ({
@@ -112,6 +127,10 @@ export const dailyReportsRelations = relations(dailyReports, ({ one }) => ({
 
 export const weeklyReportsRelations = relations(weeklyReports, ({ one }) => ({
   user: one(users, { fields: [weeklyReports.userId], references: [users.id] }),
+}));
+
+export const photosRelations = relations(photos, ({ one }) => ({
+  user: one(users, { fields: [photos.userId], references: [users.id] }),
 }));
 
 // Schema for Questionnaires

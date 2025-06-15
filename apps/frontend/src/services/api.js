@@ -203,3 +203,28 @@ export const getMonthlyDailyReports = async (month, year) => {
   }
   return response.json();
 };
+
+export const uploadPhoto = async (formData) => {
+  const response = await fetch(`${BASE_URL}/photos/upload`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: 'Failed to upload photo' }));
+    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+};
+
+export const getPhotos = async () => {
+  const response = await fetch(`${BASE_URL}/photos`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: 'Failed to fetch photos' }));
+    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+};
