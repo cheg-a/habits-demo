@@ -9,6 +9,7 @@ import WeeklyReportPage from './pages/WeeklyReportPage';
 import QuestionnairePage from './pages/QuestionnairePage';
 import UpdatePasswordPage from './pages/UpdatePasswordPage'; // Импортируем страницу обновления пароля
 import ProfilePage from './pages/ProfilePage'; // Импортируем страницу профиля
+import PhotoMapPage from './pages/PhotoMapPage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Default: not logged in
@@ -86,8 +87,7 @@ function App() {
               {/* <Route path="/" element={<DailyReportPage />} />
           <Route path="/weekly-report" element={<WeeklyReportPage />} />
           <Route path="/questionnaire" element={<QuestionnairePage onQuestionnaireComplete={handleQuestionnaireComplete} />} /> */}
-              {/* Redirect any other path to /login if not logged in */}
-              {/* Временно отключен редирект незалогиненных пользователей */}
+              <Route path="/map" element={<PhotoMapPage />} />
               <Route path="*" element={<Navigate to="/login" replace />} />
             </>
           ) : hasDefaultPassword ? (
@@ -109,6 +109,7 @@ function App() {
                   <nav className="main-nav">
                     <ul>
                       <li><Link to="/">Ежедневный отчет</Link></li>
+                      <li><Link to="/map">Карта</Link></li>
                       {dailyReport && dailyReport.number % 7 === 0 && (
                         <li><Link to="/weekly-report">Еженедельный отчет</Link></li>
                       )}
@@ -128,6 +129,7 @@ function App() {
                           <WeeklyReportPage weekNum={dailyReport.number / 7} />
                         } />
                       )}
+                      <Route path="/map" element={<PhotoMapPage />} />
                       {/* Optional: Redirect from /login or /questionnaire to / if user tries to access them again */}
                   <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/login" element={<Navigate to="/" replace />} />
