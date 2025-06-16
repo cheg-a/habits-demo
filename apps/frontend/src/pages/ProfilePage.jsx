@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getMonthlyDailyReports, getProfileSummaryData } from '../services/api';
-import { useTheme } from '../context/ThemeContext'; // Import useTheme
+import { useTheme } from '../context/ThemeContext.jsx';
 
 // Neon Icons
 import XMarkIcon from '../components/icons/XMarkIcon';
@@ -25,46 +25,58 @@ const formatDate = (dateString) => {
   });
 };
 
-const ProfileHeader = ({ userName }) => (
-  <div className="flex items-center mb-8 p-6 bg-gray-200 dark:bg-gray-800 rounded-lg shadow-lg">
-    <div className="w-20 h-20 bg-accent-cyan-light dark:bg-accent-cyan rounded-full flex items-center justify-center mr-6 shadow-md ring-4 ring-accent-cyan-light/50 dark:ring-accent-cyan/50">
-      <UserIcon className="w-10 h-10 text-primary-dark dark:text-primary-dark" /> {/* Icon color might need adjustment based on theme */}
+const ProfileHeader = ({ userName }) => {
+  const { theme } = useTheme();
+  return (
+    <div className="flex items-center mb-8 p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg">
+      <div className={`w-20 h-20 ${theme === 'dark' ? 'bg-accent-cyan' : 'bg-accent-cyan-light'} rounded-full flex items-center justify-center mr-6 shadow-md ring-4 ${theme === 'dark' ? 'ring-accent-cyan/50' : 'ring-accent-cyan-light/50'}`}>
+        <UserIcon className={`w-10 h-10 ${theme === 'dark' ? 'text-primary-dark' : 'text-white'}`} />
+      </div>
+      <div>
+        <h1 className="text-3xl font-bold text-primary-light-text dark:text-white">Мой профиль</h1>
+        {userName && (
+          <p className="text-lg text-gray-700 dark:text-gray-300">{userName}</p>
+        )}
+      </div>
     </div>
-    <div>
-      <h1 className="text-3xl font-bold text-primary-light-text dark:text-white">Мой профиль</h1>
-      {userName && (
-        <p className="text-lg text-gray-700 dark:text-gray-300">{userName}</p>
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
-const Section = ({ title, icon, children, className }) => (
-  <div className={`card mb-6 ${className}`}> {/* .card class handles its own light/dark theming */}
-    <div className="flex items-center p-4 border-b border-card-light-border dark:border-gray-700">
-      {icon && React.cloneElement(icon, { className: "w-6 h-6 mr-3 text-accent-cyan-light dark:text-accent-cyan" })}
-      <h2 className="text-xl font-semibold text-accent-cyan-light dark:text-accent-cyan">{title}</h2>
+const Section = ({ title, icon, children, className }) => {
+  const { theme } = useTheme();
+  return (
+    <div className={`card mb-6 ${className}`}> {/* .card class handles its own light/dark theming via components.css */}
+      <div className="flex items-center p-4 border-b border-card-light-border dark:border-gray-700">
+        {icon && React.cloneElement(icon, { className: `w-6 h-6 mr-3 ${theme === 'dark' ? 'text-accent-cyan' : 'text-accent-cyan-light'}` })}
+        <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-accent-cyan' : 'text-accent-cyan-light'}`}>{title}</h2>
+      </div>
+      <div className="p-6">
+        {children}
+      </div>
     </div>
-    <div className="p-6">
-      {children}
-    </div>
-  </div>
-);
+  );
+};
 
 const CalendarDayDisplay = ({ date, isToday, hasReportForDay, isMissed }) => {
+  const { theme } = useTheme();
   let dayClasses = "aspect-square flex flex-col items-center justify-center rounded-lg relative font-medium text-sm transition-all duration-200 ease-in-out ";
-  // Light theme defaults
-  dayClasses += "bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600/70";
 
   if (isToday) {
-    dayClasses = "aspect-square flex flex-col items-center justify-center rounded-lg relative font-medium text-sm transition-all duration-200 ease-in-out " +
-                 "border-2 border-accent-fuchsia-light dark:border-accent-fuchsia bg-accent-fuchsia-light/20 dark:bg-accent-fuchsia/20 text-accent-fuchsia-light dark:text-white ring-2 ring-accent-fuchsia-light/50 dark:ring-accent-fuchsia/50";
+    dayClasses += theme === 'dark'
+      ? "border-2 border-accent-fuchsia bg-accent-fuchsia/20 text-white ring-2 ring-accent-fuchsia/50"
+      : "border-2 border-accent-fuchsia-light bg-accent-fuchsia-light/20 text-accent-fuchsia-light ring-2 ring-accent-fuchsia-light/50";
   } else if (hasReportForDay) {
-    dayClasses = "aspect-square flex flex-col items-center justify-center rounded-lg relative font-medium text-sm transition-all duration-200 ease-in-out " +
-                 "bg-green-100 dark:bg-accent-cyan/20 text-green-700 dark:text-accent-cyan hover:bg-green-200 dark:hover:bg-accent-cyan/30";
+    dayClasses += theme === 'dark'
+      ? "bg-accent-cyan/20 text-accent-cyan hover:bg-accent-cyan/30"
+      : "bg-green-100 text-green-700 hover:bg-green-200";
   } else if (isMissed) {
-    dayClasses = "aspect-square flex flex-col items-center justify-center rounded-lg relative font-medium text-sm transition-all duration-200 ease-in-out " +
-                 "bg-red-100 dark:bg-accent-pink/20 text-red-700 dark:text-accent-pink hover:bg-red-200 dark:hover:bg-accent-pink/30";
+    dayClasses += theme === 'dark'
+      ? "bg-accent-pink/20 text-accent-pink hover:bg-accent-pink/30"
+      : "bg-red-100 text-red-700 hover:bg-red-200";
+  } else {
+    dayClasses += theme === 'dark'
+      ? "bg-gray-700/50 hover:bg-gray-600/70 text-gray-300"
+      : "bg-gray-200 hover:bg-gray-300 text-gray-700";
   }
 
   const tooltipText = hasReportForDay
@@ -79,10 +91,10 @@ const CalendarDayDisplay = ({ date, isToday, hasReportForDay, isMissed }) => {
     <div title={tooltipText} className={dayClasses}>
       <span>{date.getDate()}</span>
       {hasReportForDay && (
-        <CheckCircleIcon className="w-4 h-4 text-green-500 dark:text-accent-cyan absolute bottom-1 right-1 opacity-70" />
+        <CheckCircleIcon className={`w-4 h-4 absolute bottom-1 right-1 opacity-70 ${theme === 'dark' ? 'text-accent-cyan' : 'text-green-500'}`} />
       )}
       {isMissed && (
-        <XMarkIcon className="w-4 h-4 text-red-500 dark:text-accent-pink absolute bottom-1 right-1 opacity-70" />
+        <XMarkIcon className={`w-4 h-4 absolute bottom-1 right-1 opacity-70 ${theme === 'dark' ? 'text-accent-pink' : 'text-red-500'}`} />
       )}
     </div>
   );
@@ -91,11 +103,11 @@ const CalendarDayDisplay = ({ date, isToday, hasReportForDay, isMissed }) => {
 const MonthlyCalendar = ({ monthlyReports }) => {
   const [currentDate] = useState(new Date());
   const [calendarDays, setCalendarDays] = useState([]);
+  const { theme } = useTheme();
   
   useEffect(() => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    // const firstDayOfMonth = new Date(year, month, 1);
     const lastDayOfMonth = new Date(year, month + 1, 0);
     
     const days = [];
@@ -166,11 +178,11 @@ const MonthlyCalendar = ({ monthlyReports }) => {
 
       <div className="mt-6 flex justify-center items-center gap-6 text-sm">
         <div className="flex items-center">
-          <CheckCircleIcon className="w-5 h-5 text-green-500 dark:text-green-400 mr-2" />
+          <CheckCircleIcon className={`w-5 h-5 mr-2 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
           <span className="text-gray-700 dark:text-gray-300">Отчет заполнен</span>
         </div>
         <div className="flex items-center">
-          <XMarkIcon className="w-5 h-5 text-red-500 dark:text-red-400 mr-2" />
+          <XMarkIcon className={`w-5 h-5 mr-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
           <span className="text-gray-700 dark:text-gray-300">Отчет пропущен</span>
         </div>
       </div>
@@ -183,7 +195,7 @@ const ProfilePage = () => {
   const [monthlyReports, setMonthlyReports] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { theme } = useTheme(); // Get current theme
+  const { theme } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -223,8 +235,8 @@ const ProfilePage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-primary-light-bg dark:bg-primary-dark text-primary-light-text dark:text-white flex flex-col items-center justify-center p-4 animate-fadeIn">
-        <div className="card w-full max-w-md p-6 text-center bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-accent-pink text-red-700 dark:text-red-400">
-           <XMarkIcon className="w-12 h-12 mx-auto mb-3 text-red-500 dark:text-accent-pink"/>
+        <div className="card w-full max-w-md p-6 text-center bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-accent-pink text-red-700 dark:text-red-400">
+           <XMarkIcon className={`w-12 h-12 mx-auto mb-3 ${theme === 'dark' ? 'text-accent-pink' : 'text-red-500'}`}/>
           <h2 className="text-xl font-semibold mb-2">Ошибка загрузки</h2>
           <p>{error}</p>
         </div>
@@ -259,8 +271,8 @@ const ProfilePage = () => {
                   <h3 className="text-md font-semibold text-accent-fuchsia-light dark:text-accent-fuchsia mb-2">
                     Главная жизненная цель:
                   </h3>
-                  <div className="p-4 rounded-md bg-gray-100 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600">
-                    <p className="text-gray-700 dark:text-gray-300">{questionnaireSummary.mainGoal}</p>
+                  <div className="p-4 rounded-md bg-gray-200 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600">
+                    <p className="text-gray-800 dark:text-gray-300">{questionnaireSummary.mainGoal}</p>
                   </div>
                 </div>
               )}
@@ -268,14 +280,16 @@ const ProfilePage = () => {
               {questionnaireSummary.values && questionnaireSummary.values.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-md font-semibold text-accent-fuchsia-light dark:text-accent-fuchsia mb-2 flex items-center">
-                    <HeartIcon className="w-5 h-5 mr-2 text-accent-pink-light dark:text-accent-pink" />
+                    <HeartIcon className={`w-5 h-5 mr-2 ${theme === 'dark' ? 'text-accent-pink' : 'text-accent-pink-light'}`} />
                     Мои ценности:
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {questionnaireSummary.values.map((value, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1 text-sm rounded-full bg-accent-cyan-light/20 text-accent-cyan-light border border-accent-cyan-light/50 dark:bg-accent-cyan/20 dark:text-accent-cyan dark:border-accent-cyan/50"
+                        className={`px-3 py-1 text-sm rounded-full border ${theme === 'dark'
+                          ? 'bg-accent-cyan/20 text-accent-cyan border-accent-cyan/50'
+                          : 'bg-accent-cyan-light/20 text-accent-cyan-light border-accent-cyan-light/50'}`}
                       >
                         {value}
                       </span>
@@ -291,9 +305,9 @@ const ProfilePage = () => {
                   </h3>
                   <ul className="space-y-2">
                     {questionnaireSummary.habitsToTrack.map((habit, index) => (
-                      <li key={index} className="flex items-center p-3 rounded-md bg-gray-100 dark:bg-gray-700/30 border border-gray-300 dark:border-gray-600">
-                        <CheckCircleIcon className="w-5 h-5 mr-3 text-green-500 dark:text-green-400" />
-                        <span className="text-gray-700 dark:text-gray-300">{habit}</span>
+                      <li key={index} className="flex items-center p-3 rounded-md bg-gray-200 dark:bg-gray-700/30 border border-gray-300 dark:border-gray-600">
+                        <CheckCircleIcon className={`w-5 h-5 mr-3 ${theme === 'dark' ? 'text-green-400' : 'text-green-500'}`} />
+                        <span className="text-gray-800 dark:text-gray-300">{habit}</span>
                       </li>
                     ))}
                   </ul>
@@ -314,7 +328,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <footer className="mt-8 pt-6 pb-2 text-center border-t border-gray-600 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-500">
+      <footer className="mt-8 pt-6 pb-2 text-center border-t border-gray-300 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-500">
         <p>Дневник отслеживания привычек © {new Date().getFullYear()}</p>
       </footer>
     </div>

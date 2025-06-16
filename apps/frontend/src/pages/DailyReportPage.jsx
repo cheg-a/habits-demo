@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { submitDailyReport } from '../services/api';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection after successful submission
+import { useNavigate } from 'react-router-dom';
+import NeonSpinner from '../components/NeonSpinner';
+import { useTheme } from '../context/ThemeContext';
 
 // Helper function
 function formatDate(date) {
   const d = new Date(date);
   const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
   const year = d.getFullYear();
   return `${day}/${month}/${year}`;
 }
@@ -28,7 +30,7 @@ const moodOptions = [
 ];
 
 const DailyReportPage = () => {
-  const [dailyReport, setDailyReport] = useState(null); // To store the response if needed
+  const [dailyReport, setDailyReport] = useState(null);
   const [motivation, setMotivation] = useState(null);
   const [mood, setMood] = useState(null);
   const [gratitude, setGratitude] = useState('');
@@ -42,6 +44,7 @@ const DailyReportPage = () => {
   const [submitError, setSubmitError] = useState('');
   const today = formatDate(new Date());
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const resetForm = () => {
     setMotivation(null);
@@ -50,7 +53,6 @@ const DailyReportPage = () => {
     setGoal('');
     setInfluence('');
     setHabits(Array(5).fill({ text: '', problem: false, completed: false }));
-    // setSubmitted(false); // Reset submitted after form reset if navigating away or allowing new submission
   };
 
   const handleHabitChange = (idx, field, value) => {
@@ -66,7 +68,7 @@ const DailyReportPage = () => {
   };
 
   const removeHabit = (idx) => {
-    if (habits.length > 1) { // Keep at least one habit input field
+    if (habits.length > 1) {
       setHabits(habits.filter((_, i) => i !== idx));
     }
   };
@@ -82,7 +84,7 @@ const DailyReportPage = () => {
       motivation,
       mood: mood !== null ? moodOptions[mood]?.label : null,
       influence,
-      habits: habits.filter(h => h.text.trim() !== ''), // Only submit habits with text
+      habits: habits.filter(h => h.text.trim() !== ''),
     };
 
     if (data.habits.length === 0) {
@@ -101,16 +103,12 @@ const DailyReportPage = () => {
       setSubmitted(true);
       setSubmitError('');
       setDailyReport(submittedData);
-      // After successful submission, you might want to navigate away or show a success message
-      // For now, we'll just show "Отправлено ✓" on the button.
-      // To redirect or show a different component, you'd use navigate() or set a state for conditional rendering.
-      // For example, to redirect to a "done" page: navigate('/done-daily-report', { state: { dailyReport: submittedData } });
-      // Or call onReportSubmitted if passed as a prop.
-      // For now, just resetting the form after a delay
       setTimeout(() => {
         resetForm();
         setSubmitted(false);
-      }, 3000); // Show success message for 3 seconds
+        // Potentially navigate to DoneDailyReportPage if it's a separate view now
+        // navigate(`/done-report/${submittedData.id}`); // Or however you identify the report
+      }, 3000);
     } catch (error) {
       console.error('Ошибка при отправке ежедневного отчета:', error);
       setSubmitError(error.message || 'Не удалось сохранить отчет. Пожалуйста, попробуйте еще раз.');
@@ -121,11 +119,11 @@ const DailyReportPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-primary-dark text-white p-4 md:p-8 flex flex-col items-center">
+    <div className="min-h-screen bg-primary-light-bg dark:bg-primary-dark text-primary-light-text dark:text-white p-4 md:p-8 flex flex-col items-center animate-fadeIn">
       <form className="card w-full max-w-2xl p-6 space-y-6" onSubmit={handleSubmit}>
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-accent-cyan mb-1">Дневник привычек</h1>
-          <div className="text-lg text-gray-400">{today}</div>
+          <h1 className="text-3xl font-bold text-accent-cyan-light dark:text-accent-cyan mb-1">Дневник привычек</h1>
+          <div className="text-lg text-gray-600 dark:text-gray-400">{today}</div>
         </div>
 
         {/* Gratitude Section */}
@@ -163,8 +161,8 @@ const DailyReportPage = () => {
                 key={level.value}
                 className={`p-3 rounded-md border cursor-pointer transition-all duration-150 flex items-center space-x-3 ${
                   motivation === level.value
-                    ? 'bg-accent-cyan/20 border-accent-cyan ring-2 ring-accent-cyan'
-                    : 'bg-gray-700/50 border-gray-600 hover:bg-gray-600/70'
+                    ? 'bg-accent-cyan-light/20 dark:bg-accent-cyan/20 border-accent-cyan-light dark:border-accent-cyan ring-2 ring-accent-cyan-light dark:ring-accent-cyan'
+                    : 'bg-gray-100 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600/70'
                 }`}
               >
                 <input
@@ -173,10 +171,10 @@ const DailyReportPage = () => {
                   value={level.value}
                   checked={motivation === level.value}
                   onChange={() => setMotivation(level.value)}
-                  className="form-radio"
+                  className="form-radio" // This class is now theme-aware
                 />
                 <span className="text-xl">{level.icon}</span>
-                <span className="text-gray-200 text-sm">{level.label}</span>
+                <span className="text-gray-700 dark:text-gray-200 text-sm">{level.label}</span>
               </label>
             ))}
           </div>
@@ -185,16 +183,19 @@ const DailyReportPage = () => {
         {/* Mood Section */}
         <div className="space-y-2">
           <h2 className="form-label text-lg">Настроение:</h2>
-          <div className="flex flex-wrap justify-around items-center p-3 bg-gray-700/50 rounded-lg gap-2">
+          <div className="flex flex-wrap justify-around items-center p-3 bg-gray-100 dark:bg-gray-700/50 rounded-lg gap-2">
             {moodOptions.map((option, idx) => (
               <div
                 key={idx}
-                className={`p-2 rounded-md cursor-pointer transition-all duration-150 text-center
-                            ${mood === idx ? 'bg-accent-fuchsia/30 ring-2 ring-accent-fuchsia' : 'hover:bg-gray-600/70'}`}
+                className={`p-2 rounded-md cursor-pointer transition-all duration-150 text-center ${
+                  mood === idx
+                    ? 'bg-accent-fuchsia-light/30 dark:bg-accent-fuchsia/30 ring-2 ring-accent-fuchsia-light dark:ring-accent-fuchsia'
+                    : 'hover:bg-gray-200 dark:hover:bg-gray-600/70'
+                }`}
                 onClick={() => setMood(idx)}
               >
                 <span className="text-2xl">{option.emoji}</span>
-                <p className={`text-xs mt-1 ${mood === idx ? 'text-accent-fuchsia' : 'text-gray-400'}`}>{option.label}</p>
+                <p className={`text-xs mt-1 ${mood === idx ? 'text-accent-fuchsia-light dark:text-accent-fuchsia' : 'text-gray-500 dark:text-gray-400'}`}>{option.label}</p>
               </div>
             ))}
           </div>
@@ -216,10 +217,10 @@ const DailyReportPage = () => {
         {/* Habits Section */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-accent-cyan">Ежедневный контроль</h2>
+            <h2 className="text-xl font-semibold text-accent-cyan-light dark:text-accent-cyan">Ежедневный контроль</h2>
             <button
               type="button"
-              className="btn btn-secondary text-sm"
+              className="btn btn-secondary text-sm" // btn-secondary is theme-aware
               onClick={addHabit}
               disabled={habits.length >= 10}
             >
@@ -227,25 +228,25 @@ const DailyReportPage = () => {
             </button>
           </div>
 
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Определите свои привычки (например, "Сплю не менее 8 часов") и отметьте статус:
           </p>
 
           <div className="space-y-3">
             {habits.map((habit, i) => (
-              <div key={i} className="p-4 rounded-md bg-gray-800 border border-gray-700">
+              <div key={i} className="p-4 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700">
                 <div className="flex items-center gap-2 mb-2">
                   <input
                     type="text"
                     placeholder={`Привычка ${i + 1}`}
                     value={habit.text}
                     onChange={(e) => handleHabitChange(i, 'text', e.target.value)}
-                    className="form-input flex-grow"
+                    className="form-input flex-grow" // form-input is theme-aware
                   />
                   {habits.length > 1 && (
                     <button
                       type="button"
-                      className="btn btn-destructive p-2 text-xs"
+                      className="btn btn-destructive p-2 text-xs" // btn-destructive is theme-aware
                       onClick={() => removeHabit(i)}
                       aria-label="Удалить привычку"
                     >
@@ -261,9 +262,9 @@ const DailyReportPage = () => {
                         type="checkbox"
                         checked={habit.completed}
                         onChange={(e) => handleHabitChange(i, 'completed', e.target.checked)}
-                        className="form-checkbox"
+                        className="form-checkbox" // form-checkbox is theme-aware
                       />
-                      <span className="text-gray-300">Выполнено</span>
+                      <span className="text-gray-700 dark:text-gray-300">Выполнено</span>
                     </label>
 
                     <label className="flex items-center space-x-2 cursor-pointer">
@@ -271,9 +272,9 @@ const DailyReportPage = () => {
                         type="checkbox"
                         checked={habit.problem}
                         onChange={(e) => handleHabitChange(i, 'problem', e.target.checked)}
-                        className="form-checkbox"
+                        className="form-checkbox" // form-checkbox is theme-aware
                       />
-                      <span className="text-gray-300">Проблема</span>
+                      <span className="text-gray-700 dark:text-gray-300">Проблема</span>
                     </label>
                   </div>
                 )}
@@ -282,19 +283,19 @@ const DailyReportPage = () => {
           </div>
 
           {habits.length >= 10 && (
-            <p className="text-sm text-accent-pink text-center">
+            <p className="text-sm text-accent-pink-light dark:text-accent-pink text-center">
               Достигнут максимальный лимит привычек (10)
             </p>
           )}
         </div>
 
         {submitError && (
-          <div className="form-error-message p-3 bg-red-700/30 text-red-400 rounded-md text-sm text-center">
+          <div className="form-error-message p-3 bg-red-100 dark:bg-red-700/30 text-red-700 dark:text-red-400 rounded-md text-sm text-center">
             {submitError}
           </div>
         )}
         {submitted && !submitError && (
-            <div className="p-3 bg-green-700/30 text-green-400 rounded-md text-sm text-center">
+            <div className="p-3 bg-green-100 dark:bg-green-700/30 text-green-700 dark:text-green-400 rounded-md text-sm text-center">
                 Отчет успешно отправлен!
             </div>
         )}
@@ -302,20 +303,24 @@ const DailyReportPage = () => {
         <div className="pt-4">
           <button
             type="submit"
-            className={`w-full btn ${isSubmitting || (submitted && !submitError) ? 'btn-disabled' : 'btn-primary'} py-3 text-lg`}
+            className={`w-full btn ${isSubmitting || (submitted && !submitError) ? 'btn-disabled' : 'btn-primary'} py-3 text-lg flex items-center justify-center`}
             disabled={isSubmitting || (submitted && !submitError)}
           >
-            {isSubmitting ? 'Отправка...' : (submitted && !submitError) ? 'Отправлено ✓' : 'Сохранить запись'}
+            {isSubmitting ? (
+              <>
+                <NeonSpinner size="w-5 h-5" color={theme === 'dark' ? 'text-white' : 'text-primary-dark'} />
+                <span className="ml-2">Отправка...</span>
+              </>
+            ) : (submitted && !submitError) ? 'Отправлено ✓' : 'Сохранить запись'}
           </button>
         </div>
       </form>
 
-      <footer className="mt-8 text-center text-sm text-gray-500">
-        <p>Дневник отслеживания привычек © 2025</p>
+      <footer className="mt-8 text-center text-sm text-gray-600 dark:text-gray-500">
+        <p>Дневник отслеживания привычек © {new Date().getFullYear()}</p>
       </footer>
     </div>
   );
 };
 
 export default DailyReportPage;
->>>>>>> REPLACE

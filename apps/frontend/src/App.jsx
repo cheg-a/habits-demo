@@ -10,7 +10,7 @@ import UpdatePasswordPage from './pages/UpdatePasswordPage';
 import ProfilePage from './pages/ProfilePage';
 import NeonSpinner from './components/NeonSpinner';
 import { useTheme } from './context/ThemeContext'; // Import useTheme
-import SunIcon from './assets/icons/SunIcon'; // Import SunIcon
+import SunIcon from './components/icons/SunIcon'; // Corrected Path for SunIcon
 import MoonIcon from './assets/icons/MoonIcon'; // Import MoonIcon
 
 function App() {
@@ -122,8 +122,16 @@ function App() {
                     <li><NavLink to="/profile" className={({ isActive }) => isActive ? "main-nav-link main-nav-link-active" : "main-nav-link"}>Мой профиль</NavLink></li>
                     <li><button onClick={handleLogout} className="btn btn-secondary">Выйти</button></li>
                     <li>
-                      <button onClick={toggleTheme} className="p-2 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-cyan">
-                        {theme === 'light' ? <MoonIcon className="w-6 h-6 text-accent-fuchsia" /> : <SunIcon className="w-6 h-6 text-accent-yellow" />}
+                      <button
+                        onClick={toggleTheme}
+                        className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-cyan-light dark:focus:ring-accent-cyan"
+                        aria-label="Toggle theme"
+                      >
+                        {theme === 'light' ? (
+                          <MoonIcon className="w-6 h-6 text-accent-fuchsia-light dark:text-accent-fuchsia" />
+                        ) : (
+                          <SunIcon className="w-6 h-6 text-yellow-400" /> // Using a standard Tailwind yellow for dark mode sun
+                        )}
                       </button>
                     </li>
                   </ul>
