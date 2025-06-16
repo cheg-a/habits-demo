@@ -3,9 +3,9 @@ import { getMonthlyDailyReports, getProfileSummaryData } from '../services/api';
 import { useTheme } from '../context/ThemeContext.jsx';
 
 // Neon Icons
-import XMarkIcon from '../components/icons/XMarkIcon';
-import CheckCircleIcon from '../components/icons/CheckCircleIcon';
-import HeartIcon from '../components/icons/HeartIcon';
+import XMarkIcon from "../assets/icons/XMarkIcon";
+import CheckCircleIcon from "../assets/icons/CheckCircleIcon";
+import HeartIcon from "../assets/icons/HeartIcon";
 import FlagIcon from '../components/icons/FlagIcon';
 import UserIcon from '../components/icons/UserIcon';
 import CalendarDaysIcon from '../components/icons/CalendarDaysIcon';
