@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { updatePassword, checkSession } from '../services/api';
-import '../App.css';
+import { updatePassword } from '../services/api'; // Removed checkSession as it's not directly used here
 
 const UpdatePasswordPage = ({ onPasswordUpdated }) => {
   const [newPassword, setNewPassword] = useState('');
@@ -12,13 +11,11 @@ const UpdatePasswordPage = ({ onPasswordUpdated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Проверка совпадения паролей
     if (newPassword !== confirmPassword) {
       setError('Пароли не совпадают');
       return;
     }
     
-    // Проверка минимальной длины пароля
     if (newPassword.length < 6) {
       setError('Пароль должен содержать минимум 6 символов');
       return;
@@ -32,7 +29,6 @@ const UpdatePasswordPage = ({ onPasswordUpdated }) => {
       await updatePassword(newPassword);
       setSuccessMessage('Пароль успешно обновлен');
       
-      // Даем пользователю немного времени, чтобы увидеть сообщение об успехе
       setTimeout(() => {
         if (onPasswordUpdated) {
           onPasswordUpdated();
@@ -47,23 +43,32 @@ const UpdatePasswordPage = ({ onPasswordUpdated }) => {
   };
   
   return (
-    <div className="login-page-container">
-      <div className="login-form-wrapper">
-        <div className="login-header">
-          <h1 className="login-title">Обновление пароля</h1>
-          <p className="login-subtitle">Необходимо сменить стандартный пароль на новый для продолжения работы</p>
+    <div className="min-h-screen bg-primary-light-bg dark:bg-primary-dark text-primary-light-text dark:text-white flex flex-col items-center justify-center p-4 animate-fadeIn">
+      <div className="card w-full max-w-md p-8 space-y-6">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-accent-cyan-light dark:text-accent-cyan mb-2">Обновление пароля</h1>
+          <p className="text-gray-600 dark:text-gray-400">Необходимо сменить стандартный пароль на новый для продолжения работы</p>
         </div>
         
-        <form onSubmit={handleSubmit} className="login-form">
-          {error && <div className="error-message">{error}</div>}
-          {successMessage && <div className="success-message">{successMessage}</div>}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="form-error-message p-3 bg-red-100 dark:bg-red-700/30 text-red-700 dark:text-red-400 rounded-md text-sm text-center">
+              {error}
+            </div>
+          )}
+          {successMessage && (
+            <div className="p-3 bg-green-100 dark:bg-green-700/30 text-green-700 dark:text-green-400 rounded-md text-sm text-center">
+              {successMessage}
+            </div>
+          )}
           
-          <div className="input-group">
-            <label htmlFor="newPassword">Новый пароль</label>
+          <div>
+            <label htmlFor="newPassword" className="form-label">Новый пароль</label>
             <input
               type="password"
               id="newPassword"
               name="newPassword"
+              className={`form-input mt-1 ${(error && newPassword !== confirmPassword) || (error && newPassword.length < 6) ? 'form-input-error' : ''}`}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Введите новый пароль"
@@ -73,12 +78,13 @@ const UpdatePasswordPage = ({ onPasswordUpdated }) => {
             />
           </div>
           
-          <div className="input-group">
-            <label htmlFor="confirmPassword">Подтверждение пароля</label>
+          <div>
+            <label htmlFor="confirmPassword" className="form-label">Подтверждение пароля</label>
             <input
               type="password"
               id="confirmPassword"
               name="confirmPassword"
+              className={`form-input mt-1 ${(error && newPassword !== confirmPassword) ? 'form-input-error' : ''}`}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Подтвердите новый пароль"
@@ -89,13 +95,16 @@ const UpdatePasswordPage = ({ onPasswordUpdated }) => {
           
           <button 
             type="submit" 
-            className="submit-button login-button" 
-            disabled={isLoading}
+            className={`w-full btn ${isLoading || successMessage ? 'btn-disabled' : 'btn-primary'} py-3 text-lg`}
+            disabled={isLoading || !!successMessage} // Disable button after successful submission too
           >
             {isLoading ? 'Обновление...' : 'Обновить пароль'}
           </button>
         </form>
       </div>
+      <footer className="mt-8 text-center text-sm text-gray-700 dark:text-gray-500">
+        <p>Дневник отслеживания привычек © 2025</p>
+      </footer>
     </div>
   );
 };

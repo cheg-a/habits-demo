@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
-import './App.css';
-import { logoutUser, checkSession } from './services/api'; // Добавляем импорт checkSession
+import { Routes, Route, Navigate, NavLink, useNavigate } from 'react-router-dom';
+import { logoutUser, checkSession } from './services/api';
 import DailyReportPage from './pages/DailyReportPage';
-import DoneDailyReportPage from './pages/DoneDailyReportPage'; // Импортируем новую страницу
+import DoneDailyReportPage from './pages/DoneDailyReportPage';
 import LoginPage from './pages/LoginPage';
 import WeeklyReportPage from './pages/WeeklyReportPage';
 import QuestionnairePage from './pages/QuestionnairePage';
-import UpdatePasswordPage from './pages/UpdatePasswordPage'; // Импортируем страницу обновления пароля
-import ProfilePage from './pages/ProfilePage'; // Импортируем страницу профиля
+import UpdatePasswordPage from './pages/UpdatePasswordPage';
+import ProfilePage from './pages/ProfilePage';
+import NeonSpinner from './components/NeonSpinner';
+import { useTheme } from './context/ThemeContext'; // Import useTheme
+import SunIcon from './assets/icons/SunIcon'; // Import SunIcon
+import MoonIcon from './assets/icons/MoonIcon'; // Import MoonIcon
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Default: not logged in
-  const [isLoading, setIsLoading] = useState(true); // Добавляем состояние загрузки
-  const [needsQuestionnaire, setNeedsQuestionnaire] = useState(false); // Изменено: по умолчанию false, значение придет с сервера
-  const [dailyReport, setDailyReport] = useState(null); // Добавляем состояние для хранения ежедневного отчета
-  const [hasDefaultPassword, setHasDefaultPassword] = useState(false); // Добавляем состояние для проверки дефолтного пароля
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [needsQuestionnaire, setNeedsQuestionnaire] = useState(false);
+  const [dailyReport, setDailyReport] = useState(null);
+  const [hasDefaultPassword, setHasDefaultPassword] = useState(false);
+  const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme(); // Use the theme context
 
-  // Эффект для проверки активной сессии при загрузке страницы
   useEffect(() => {
     const verifySession = async () => {
       try {
@@ -26,15 +29,14 @@ function App() {
         const { isLoggedIn, needsQuestionnaire, dailyReport, hasDefaultPassword } = await checkSession();
         setIsLoggedIn(isLoggedIn);
         setNeedsQuestionnaire(needsQuestionnaire || false);
-        setDailyReport(dailyReport); // Сохраняем dailyReport в состоянии
-        setHasDefaultPassword(hasDefaultPassword || false); // Сохраняем состояние дефолтного пароля
+        setDailyReport(dailyReport);
+        setHasDefaultPassword(hasDefaultPassword || false);
       } catch (error) {
         console.error('Failed to verify session:', error);
-        // При ошибке считаем, что пользователь не авторизован
         setIsLoggedIn(false);
         setNeedsQuestionnaire(false);
         setDailyReport(null);
-        setHasDefaultPassword(false); // Сбрасываем состояние дефолтного пароля при ошибке
+        setHasDefaultPassword(false);
       } finally {
         setIsLoading(false);
       }
@@ -45,104 +47,111 @@ function App() {
 
   const handleLoginSuccess = (needQuestionnaire, dailyReportData, isDefaultPassword) => {
     setIsLoggedIn(true);
-    setNeedsQuestionnaire(needQuestionnaire); // Устанавливаем значение, полученное с сервера
-    setDailyReport(dailyReportData); // Сохраняем dailyReport из успешного логина
-    setHasDefaultPassword(isDefaultPassword || false); // Сохраняем статус дефолтного пароля
+    setNeedsQuestionnaire(needQuestionnaire);
+    setDailyReport(dailyReportData);
+    setHasDefaultPassword(isDefaultPassword || false);
   };
 
   const handleLogout = async () => {
     try {
       await logoutUser();
       setIsLoggedIn(false);
-      setNeedsQuestionnaire(false); // Reset questionnaire state
-      setDailyReport(null); // Сбрасываем dailyReport
-      // Navigation to /login is handled by conditional rendering
-      // but explicitly navigating might be desired in some SPA setups
-      // navigate('/login');
+      setNeedsQuestionnaire(false);
+      setDailyReport(null);
+      navigate('/login'); // Explicitly navigate to login after logout
     } catch (error) {
       console.error('Logout failed:', error);
-      // Optionally, show a user-facing error message
     }
   };
 
   const handleQuestionnaireComplete = () => {
     setNeedsQuestionnaire(false);
+    navigate('/'); // Navigate to home after questionnaire completion
   };
 
+  const handlePasswordUpdated = () => {
+    setHasDefaultPassword(false);
+    // Potentially navigate to home or dashboard if not already there
+    // This depends on the desired flow after password update.
+    // For now, we assume checkSession will handle redirection if needed.
+    // Or, if App.jsx re-renders, the routing logic will take over.
+    // To be safe, we can add a navigate('/') here if the user is not already on a valid page.
+    if (window.location.pathname === '/update-password') {
+        navigate('/');
+    }
+  };
+
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-primary-dark text-white flex flex-col items-center justify-center p-4">
+        <NeonSpinner size="w-16 h-16" color="text-accent-cyan" />
+        <p className="mt-4 text-xl">Загрузка...</p>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {isLoading ? (
-        // Показываем индикатор загрузки, пока проверяем сессию
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Загрузка...</p>
-        </div>
-      ) : (
-        <Routes>
-          {!isLoggedIn ? (
-            <>
-              {/* Временно открыт доступ ко всем маршрутам без логина */}
-              <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
-              {/* <Route path="/" element={<DailyReportPage />} />
-          <Route path="/weekly-report" element={<WeeklyReportPage />} />
-          <Route path="/questionnaire" element={<QuestionnairePage onQuestionnaireComplete={handleQuestionnaireComplete} />} /> */}
-              {/* Redirect any other path to /login if not logged in */}
-              {/* Временно отключен редирект незалогиненных пользователей */}
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </>
-          ) : hasDefaultPassword ? (
-            <>
-              <Route path="/update-password" element={<UpdatePasswordPage onPasswordUpdated={() => setHasDefaultPassword(false)} />} />
-              {/* Redirect any other path to /update-password if password is default */}
-              <Route path="*" element={<Navigate to="/update-password" replace />} />
-            </>
-          ) : needsQuestionnaire ? (
-            <>
-              <Route path="/questionnaire" element={<QuestionnairePage onQuestionnaireComplete={handleQuestionnaireComplete} />} />
-              {/* Redirect any other path to /questionnaire if questionnaire is needed */}
-              <Route path="*" element={<Navigate to="/questionnaire" replace />} />
-            </>
-          ) : (
-            <>
-              <Route path="*" element={
-                <div className="main-app-layout">
-                  <nav className="main-nav">
-                    <ul>
-                      <li><Link to="/">Ежедневный отчет</Link></li>
-                      {dailyReport && dailyReport.number % 7 === 0 && (
-                        <li><Link to="/weekly-report">Еженедельный отчет</Link></li>
-                      )}
-                  <li><Link to="/profile">Мой профиль</Link></li>
-                      <li><button onClick={handleLogout} className="logout-button">Выйти</button></li>
-                    </ul>
-                  </nav>
-                  <div className="content-area">
-                    <Routes>
-                      <Route path="/" element={
-                        dailyReport ?
-                          <DoneDailyReportPage dailyReport={dailyReport} /> :
-                          <DailyReportPage />
+    <div className={`${theme}`}> {/* Apply theme class to the root div */}
+      <Routes>
+        {!isLoggedIn ? (
+          <>
+            <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </>
+        ) : hasDefaultPassword ? (
+          <>
+            <Route path="/update-password" element={<UpdatePasswordPage onPasswordUpdated={handlePasswordUpdated} />} />
+            <Route path="*" element={<Navigate to="/update-password" replace />} />
+          </>
+        ) : needsQuestionnaire ? (
+          <>
+            <Route path="/questionnaire" element={<QuestionnairePage onQuestionnaireComplete={handleQuestionnaireComplete} />} />
+            <Route path="*" element={<Navigate to="/questionnaire" replace />} />
+          </>
+        ) : (
+          <>
+            <Route path="*" element={
+              <div className="min-h-screen bg-primary-light-bg dark:bg-primary-dark text-primary-light-text dark:text-white">
+                <nav className="main-nav-bar">
+                  <ul className="main-nav-list">
+                    <li><NavLink to="/" className={({ isActive }) => isActive ? "main-nav-link main-nav-link-active" : "main-nav-link"}>Ежедневный отчет</NavLink></li>
+                    {dailyReport && dailyReport.number % 7 === 0 && (
+                      <li><NavLink to="/weekly-report" className={({ isActive }) => isActive ? "main-nav-link main-nav-link-active" : "main-nav-link"}>Еженедельный отчет</NavLink></li>
+                    )}
+                    <li><NavLink to="/profile" className={({ isActive }) => isActive ? "main-nav-link main-nav-link-active" : "main-nav-link"}>Мой профиль</NavLink></li>
+                    <li><button onClick={handleLogout} className="btn btn-secondary">Выйти</button></li>
+                    <li>
+                      <button onClick={toggleTheme} className="p-2 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-cyan">
+                        {theme === 'light' ? <MoonIcon className="w-6 h-6 text-accent-fuchsia" /> : <SunIcon className="w-6 h-6 text-accent-yellow" />}
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+                <div className="content-area p-4 animate-fadeIn">
+                  <Routes>
+                    <Route path="/" element={
+                      dailyReport ?
+                        <DoneDailyReportPage dailyReport={dailyReport} /> :
+                        <DailyReportPage />
+                    } />
+                    {dailyReport && dailyReport.number % 7 === 0 && (
+                      <Route path="/weekly-report" element={
+                        <WeeklyReportPage weekNum={dailyReport.number / 7} />
                       } />
-                      {dailyReport && dailyReport.number % 7 === 0 && (
-                        <Route path="/weekly-report" element={
-                          <WeeklyReportPage weekNum={dailyReport.number / 7} />
-                        } />
-                      )}
-                      {/* Optional: Redirect from /login or /questionnaire to / if user tries to access them again */}
-                  <Route path="/profile" element={<ProfilePage />} />
-                      <Route path="/login" element={<Navigate to="/" replace />} />
-                      <Route path="/questionnaire" element={<Navigate to="/" replace />} />
-                      {/* Fallback for any other route, could be a 404 page or redirect to / */}
-                      <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
-                  </div>
+                    )}
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/login" element={<Navigate to="/" replace />} />
+                    <Route path="/questionnaire" element={<Navigate to="/" replace />} />
+                    <Route path="*" element={<Navigate to="/" replace />} /> {/* Fallback for authenticated users */}
+                  </Routes>
                 </div>
-              } />
-            </>
-          )}
-        </Routes>
-      )}
-    </>
+              </div>
+            } />
+          </>
+        )}
+      </Routes>
+    </div>
   );
 }
 

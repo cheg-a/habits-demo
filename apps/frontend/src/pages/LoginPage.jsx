@@ -1,62 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { loginUser } from '../services/api'; // Import loginUser
-import '../App.css'; // Убедитесь, что App.css импортирован
+import NeonSpinner from '../components/NeonSpinner'; // Import NeonSpinner
+
+// Helper function (can be moved to a utils file if used elsewhere)
+function formatDate(date) {
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
 const LoginPage = ({ onLoginSuccess }) => {
-  // Состояния для хранения введенных данных
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  
-  // Состояния для отслеживания процесса входа и ошибок
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Предотвращаем стандартное поведение формы
-    setIsLoading(true); // Включаем состояние загрузки
-    setError(''); // Сбрасываем предыдущие ошибки
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
     try {
-      // Используем функцию loginUser из api.js
       const data = await loginUser(username, password);
-
-      // Вызываем колбэк успешного входа и передаем данные о необходимости анкеты
       if (onLoginSuccess) {
-        // Проверяем наличие объекта user и свойства needQuestionnaire
-        const needQuestionnaire = !!data.needQuestionnaire; // Default to false if not present
-        
-        // Передаем информацию о dailyReport и isDefaultPassword
-        onLoginSuccess(
-          needQuestionnaire, 
-          data.dailyReport, 
-          data.isDefaultPassword === true
-        );
+        const needQuestionnaire = !!data.needQuestionnaire;
+        const dailyReportData = data.dailyReport;
+        const isDefaultPassword = data.isDefaultPassword === true;
+        onLoginSuccess(needQuestionnaire, dailyReportData, isDefaultPassword);
       }
-
     } catch (err) {
-      // Обрабатываем ошибки (уже обработанные в loginUser, но можно добавить специфичную логику)
-      setError(err.message || 'Произошла ошибка при входе.'); // Используем сообщение из ошибки, если есть
+      setError(err.message || 'Произошла ошибка при входе.');
     } finally {
-      setIsLoading(false); // Выключаем состояние загрузки
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="login-page-container">
-      <div className="login-form-wrapper">
-        <div className="login-header">
-          <h1 className="login-title">Вход в систему</h1>
-          <p className="login-subtitle">Добро пожаловать! Пожалуйста, введите ваши данные.</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-primary-dark p-4 animate-fadeIn">
+      <div className="card w-full max-w-md p-8 space-y-6">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-accent-cyan mb-2">Вход в систему</h1>
+          <p className="text-gray-400">Добро пожаловать! Пожалуйста, введите ваши данные.</p>
         </div>
-        <form onSubmit={handleSubmit} className="login-form">
-          {error && <div className="error-message">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="form-error-message p-3 bg-red-700/30 text-red-400 rounded-md text-sm text-center">
+              {error}
+            </div>
+          )}
           
-          <div className="input-group">
-            <label htmlFor="username">Имя пользователя</label>
+          <div>
+            <label htmlFor="username" className="form-label">Имя пользователя</label>
             <input
               type="text"
               id="username"
               name="username"
+              className={`form-input mt-1 ${error && !password ? 'form-input-error' : ''}`}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Введите ваше имя пользователя"
@@ -65,12 +66,13 @@ const LoginPage = ({ onLoginSuccess }) => {
             />
           </div>
 
-          <div className="input-group">
-            <label htmlFor="password">Пароль</label>
+          <div>
+            <label htmlFor="password" className="form-label">Пароль</label>
             <input
               type="password"
               id="password"
               name="password"
+              className={`form-input mt-1 ${error ? 'form-input-error' : ''}`}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Введите ваш пароль"
@@ -79,15 +81,25 @@ const LoginPage = ({ onLoginSuccess }) => {
             />
           </div>
 
-          <button 
-            type="submit" 
-            className="submit-button login-button" 
+          <button
+            type="submit"
+            className={`w-full btn ${isLoading ? 'btn-disabled' : 'btn-primary'} py-3 text-lg flex items-center justify-center`}
             disabled={isLoading}
           >
-            {isLoading ? 'Вход...' : 'Войти'}
+            {isLoading ? (
+              <>
+                <NeonSpinner size="w-5 h-5" color="text-white" />
+                <span className="ml-2">Вход...</span>
+              </>
+            ) : (
+              'Войти'
+            )}
           </button>
         </form>
       </div>
+      <footer className="mt-8 text-center text-sm text-gray-500">
+        <p>Дневник отслеживания привычек © 2025</p>
+      </footer>
     </div>
   );
 };

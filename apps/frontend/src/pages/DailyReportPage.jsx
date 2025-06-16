@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { submitDailyReport } from '../services/api'; // Import submitDailyReport
-import '../App.css'; // Assuming styles from App.css are needed
+import React, { useState, useEffect } from 'react';
+import { submitDailyReport } from '../services/api';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection after successful submission
 
-// Helper function from App.jsx
+// Helper function
 function formatDate(date) {
   const d = new Date(date);
   const day = String(d.getDate()).padStart(2, '0');
@@ -11,7 +11,6 @@ function formatDate(date) {
   return `${day}/${month}/${year}`;
 }
 
-// Constants from App.jsx
 const motivationLevels = [
   { value: 1, label: 'Мне всё равно', icon: '😕' },
   { value: 2, label: 'Будет сложно', icon: '🤔' },
@@ -29,7 +28,7 @@ const moodOptions = [
 ];
 
 const DailyReportPage = () => {
-  const [dailyReport, setDailyReport] = useState(null);
+  const [dailyReport, setDailyReport] = useState(null); // To store the response if needed
   const [motivation, setMotivation] = useState(null);
   const [mood, setMood] = useState(null);
   const [gratitude, setGratitude] = useState('');
@@ -40,8 +39,9 @@ const DailyReportPage = () => {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState(''); // Added submitError state
+  const [submitError, setSubmitError] = useState('');
   const today = formatDate(new Date());
+  const navigate = useNavigate();
 
   const resetForm = () => {
     setMotivation(null);
@@ -50,12 +50,12 @@ const DailyReportPage = () => {
     setGoal('');
     setInfluence('');
     setHabits(Array(5).fill({ text: '', problem: false, completed: false }));
-    // Do not reset 'submitted' here if we want to show "Отправлено ✓" for a bit
+    // setSubmitted(false); // Reset submitted after form reset if navigating away or allowing new submission
   };
 
   const handleHabitChange = (idx, field, value) => {
-    setHabits((habits) =>
-      habits.map((h, i) => (i === idx ? { ...h, [field]: value } : h))
+    setHabits((prevHabits) =>
+      prevHabits.map((h, i) => (i === idx ? { ...h, [field]: value } : h))
     );
   };
 
@@ -66,31 +66,25 @@ const DailyReportPage = () => {
   };
 
   const removeHabit = (idx) => {
-    if (habits.length > 1) {
+    if (habits.length > 1) { // Keep at least one habit input field
       setHabits(habits.filter((_, i) => i !== idx));
     }
   };
 
-  const handleSubmit = async (e) => { // Made async
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitError(''); // Clear previous errors
-    // Keep submitted true for a bit if it was true, or set to false before new attempt
-    // setSubmitted(false); // Optional: clear "Отправлено ✓" immediately on new submit
+    setSubmitError('');
 
     const data = {
       gratitude,
       goal,
       motivation,
-      // Mood is stored as index, backend might expect string or index.
-      // Assuming backend handles index or we map it here/in api.js if needed.
-      // For now, sending mood index (or null).
-      mood: mood !== null ? moodOptions[mood]?.label : null, // Sending label, or null
+      mood: mood !== null ? moodOptions[mood]?.label : null,
       influence,
-      habits: habits.filter(h => h.text.trim() !== ''),
+      habits: habits.filter(h => h.text.trim() !== ''), // Only submit habits with text
     };
 
-    // Basic validation: ensure at least one habit is filled if habits array is a primary part of the report
     if (data.habits.length === 0) {
       setSubmitError('Пожалуйста, добавьте хотя бы одну привычку для отчета.');
       setIsSubmitting(false);
@@ -103,105 +97,129 @@ const DailyReportPage = () => {
     }
 
     try {
-     const submittedDailyReport = await submitDailyReport(data);
-      setSubmitted(true); // Show success
-      setSubmitError(''); // Clear any previous error
-      setDailyReport(submittedDailyReport); // Save the submitted report data if needed
-      // Reset form after a short delay to show "Отправлено ✓"
-      // setTimeout(() => {
-      //   resetForm();
-      //   setSubmitted(false); // Reset submitted after form reset and delay
-      // }, 2000);
+     const submittedData = await submitDailyReport(data);
+      setSubmitted(true);
+      setSubmitError('');
+      setDailyReport(submittedData);
+      // After successful submission, you might want to navigate away or show a success message
+      // For now, we'll just show "Отправлено ✓" on the button.
+      // To redirect or show a different component, you'd use navigate() or set a state for conditional rendering.
+      // For example, to redirect to a "done" page: navigate('/done-daily-report', { state: { dailyReport: submittedData } });
+      // Or call onReportSubmitted if passed as a prop.
+      // For now, just resetting the form after a delay
+      setTimeout(() => {
+        resetForm();
+        setSubmitted(false);
+      }, 3000); // Show success message for 3 seconds
     } catch (error) {
       console.error('Ошибка при отправке ежедневного отчета:', error);
       setSubmitError(error.message || 'Не удалось сохранить отчет. Пожалуйста, попробуйте еще раз.');
-      setSubmitted(false); // Ensure submitted is false on error
+      setSubmitted(false);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="app-container">
-      <form className="habit-journal" onSubmit={handleSubmit}>
-        <div className="journal-header">
-          <h1 className="journal-title">Дневник привычек</h1>
-          <div className="journal-date">{today}</div>
+    <div className="min-h-screen bg-primary-dark text-white p-4 md:p-8 flex flex-col items-center">
+      <form className="card w-full max-w-2xl p-6 space-y-6" onSubmit={handleSubmit}>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-accent-cyan mb-1">Дневник привычек</h1>
+          <div className="text-lg text-gray-400">{today}</div>
         </div>
 
-        <div className="section">
-          <h2 className="section-title">Сегодня вы благодарны за:</h2>
+        {/* Gratitude Section */}
+        <div className="space-y-2">
+          <label htmlFor="gratitude" className="form-label text-lg">Сегодня вы благодарны за:</label>
           <textarea
-            rows={2}
+            id="gratitude"
+            rows="3"
             value={gratitude}
             onChange={(e) => setGratitude(e.target.value)}
             placeholder="Напишите за что вы благодарны сегодня..."
+            className="form-textarea"
           />
         </div>
 
-        <div className="section">
-          <h2 className="section-title">Цель сегодняшней привычки:</h2>
+        {/* Goal Section */}
+        <div className="space-y-2">
+          <label htmlFor="goal" className="form-label text-lg">Цель сегодняшней привычки:</label>
           <textarea
-            rows={2}
+            id="goal"
+            rows="3"
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
             placeholder="Опишите цель, которую хотите достичь..."
+            className="form-textarea"
           />
         </div>
 
-        <div className="section">
-          <h2 className="section-title">Проверка мотивации:</h2>
-          <div className="motivation-options">
+        {/* Motivation Section */}
+        <div className="space-y-2">
+          <h2 className="form-label text-lg">Проверка мотивации:</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {motivationLevels.map((level) => (
               <label
                 key={level.value}
-                className={`motivation-option ${motivation === level.value ? 'selected' : ''}`}
+                className={`p-3 rounded-md border cursor-pointer transition-all duration-150 flex items-center space-x-3 ${
+                  motivation === level.value
+                    ? 'bg-accent-cyan/20 border-accent-cyan ring-2 ring-accent-cyan'
+                    : 'bg-gray-700/50 border-gray-600 hover:bg-gray-600/70'
+                }`}
               >
                 <input
                   type="radio"
                   name="motivation"
+                  value={level.value}
                   checked={motivation === level.value}
                   onChange={() => setMotivation(level.value)}
+                  className="form-radio"
                 />
-                <span className="motivation-icon">{level.icon}</span>
-                <span className="motivation-label">{level.label}</span>
+                <span className="text-xl">{level.icon}</span>
+                <span className="text-gray-200 text-sm">{level.label}</span>
               </label>
             ))}
           </div>
         </div>
 
-        <div className="section">
-          <h2 className="section-title">Настроение:</h2>
-          <div className="mood-options">
+        {/* Mood Section */}
+        <div className="space-y-2">
+          <h2 className="form-label text-lg">Настроение:</h2>
+          <div className="flex flex-wrap justify-around items-center p-3 bg-gray-700/50 rounded-lg gap-2">
             {moodOptions.map((option, idx) => (
               <div
                 key={idx}
-                className={`mood-option ${mood === idx ? 'selected' : ''}`}
+                className={`p-2 rounded-md cursor-pointer transition-all duration-150 text-center
+                            ${mood === idx ? 'bg-accent-fuchsia/30 ring-2 ring-accent-fuchsia' : 'hover:bg-gray-600/70'}`}
                 onClick={() => setMood(idx)}
               >
-                <span className="mood-emoji">{option.emoji}</span>
-                <span className="mood-label">{option.label}</span>
+                <span className="text-2xl">{option.emoji}</span>
+                <p className={`text-xs mt-1 ${mood === idx ? 'text-accent-fuchsia' : 'text-gray-400'}`}>{option.label}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="section">
-          <h2 className="section-title">Что сегодня влияет на вашу привычку?</h2>
+        {/* Influence Section */}
+        <div className="space-y-2">
+          <label htmlFor="influence" className="form-label text-lg">Что сегодня влияет на вашу привычку?</label>
           <textarea
-            rows={2}
+            id="influence"
+            rows="3"
             value={influence}
             onChange={(e) => setInfluence(e.target.value)}
             placeholder="Ситуации, люди, эмоции, мысли и т.д."
+            className="form-textarea"
           />
         </div>
 
-        <div className="section habits-section">
-          <div className="section-header">
-            <h2 className="section-title">Ежедневный контроль</h2>
+        {/* Habits Section */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-accent-cyan">Ежедневный контроль</h2>
             <button
               type="button"
-              className="add-habit-btn"
+              className="btn btn-secondary text-sm"
               onClick={addHabit}
               disabled={habits.length >= 10}
             >
@@ -209,26 +227,25 @@ const DailyReportPage = () => {
             </button>
           </div>
 
-          <div className="habits-info">
+          <p className="text-sm text-gray-400">
             Определите свои привычки (например, "Сплю не менее 8 часов") и отметьте статус:
-          </div>
+          </p>
 
-          <div className="daily-control">
+          <div className="space-y-3">
             {habits.map((habit, i) => (
-              <div key={i} className="habit-item">
-                <div className="habit-input-group">
+              <div key={i} className="p-4 rounded-md bg-gray-800 border border-gray-700">
+                <div className="flex items-center gap-2 mb-2">
                   <input
                     type="text"
                     placeholder={`Привычка ${i + 1}`}
                     value={habit.text}
                     onChange={(e) => handleHabitChange(i, 'text', e.target.value)}
-                    className="habit-input"
+                    className="form-input flex-grow"
                   />
-
                   {habits.length > 1 && (
                     <button
                       type="button"
-                      className="remove-habit-btn"
+                      className="btn btn-destructive p-2 text-xs"
                       onClick={() => removeHabit(i)}
                       aria-label="Удалить привычку"
                     >
@@ -238,23 +255,25 @@ const DailyReportPage = () => {
                 </div>
 
                 {habit.text.trim() !== '' && (
-                  <div className="habit-status">
-                    <label className="status-option">
+                  <div className="flex space-x-4 mt-2">
+                    <label className="flex items-center space-x-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={habit.completed}
                         onChange={(e) => handleHabitChange(i, 'completed', e.target.checked)}
+                        className="form-checkbox"
                       />
-                      <span>Выполнено</span>
+                      <span className="text-gray-300">Выполнено</span>
                     </label>
 
-                    <label className="status-option problem">
+                    <label className="flex items-center space-x-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={habit.problem}
                         onChange={(e) => handleHabitChange(i, 'problem', e.target.checked)}
+                        className="form-checkbox"
                       />
-                      <span>Проблема</span>
+                      <span className="text-gray-300">Проблема</span>
                     </label>
                   </div>
                 )}
@@ -263,29 +282,35 @@ const DailyReportPage = () => {
           </div>
 
           {habits.length >= 10 && (
-            <div className="habits-limit-message">
+            <p className="text-sm text-accent-pink text-center">
               Достигнут максимальный лимит привычек (10)
-            </div>
+            </p>
           )}
         </div>
 
-        <div className="form-actions">
+        {submitError && (
+          <div className="form-error-message p-3 bg-red-700/30 text-red-400 rounded-md text-sm text-center">
+            {submitError}
+          </div>
+        )}
+        {submitted && !submitError && (
+            <div className="p-3 bg-green-700/30 text-green-400 rounded-md text-sm text-center">
+                Отчет успешно отправлен!
+            </div>
+        )}
+
+        <div className="pt-4">
           <button
             type="submit"
-            className={`submit-button ${isSubmitting ? 'submitting' : ''} ${submitted ? 'submitted' : ''}`}
-            disabled={isSubmitting || (submitted && !submitError)} // Disable if submitting OR submitted successfully (no error)
+            className={`w-full btn ${isSubmitting || (submitted && !submitError) ? 'btn-disabled' : 'btn-primary'} py-3 text-lg`}
+            disabled={isSubmitting || (submitted && !submitError)}
           >
             {isSubmitting ? 'Отправка...' : (submitted && !submitError) ? 'Отправлено ✓' : 'Сохранить запись'}
           </button>
         </div>
-        {submitError && (
-          <div className="error-message" style={{ marginTop: '15px', textAlign: 'center' }}>
-            {submitError}
-          </div>
-        )}
       </form>
 
-      <footer className="app-footer">
+      <footer className="mt-8 text-center text-sm text-gray-500">
         <p>Дневник отслеживания привычек © 2025</p>
       </footer>
     </div>
@@ -293,3 +318,4 @@ const DailyReportPage = () => {
 };
 
 export default DailyReportPage;
+>>>>>>> REPLACE

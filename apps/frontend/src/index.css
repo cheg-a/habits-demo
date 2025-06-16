@@ -1,68 +1,25 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+body {
+  @apply bg-primary-light-bg text-primary-light-text dark:bg-primary-dark dark:text-white;
+  font-family: 'Orbitron', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  /* Light theme heading color - choose a darker variant of cyan or a general dark text color */
+  @apply text-neutral-800 dark:text-accent-cyan;
 }
 
 a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  /* Light theme link color - choose a darker variant of pink or a general dark link color */
+  @apply text-pink-600 dark:text-accent-pink hover:text-pink-500 dark:hover:text-pink-400;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
+/* You can add more global styles or component-specific styles here if needed,
+   but prioritize Tailwind utility classes for most styling. */
+/* Ensure .card and other component styles in components.css handle their light/dark modes correctly */
+/* Example: .card might be bg-card-light-bg dark:bg-gray-800/80 */
