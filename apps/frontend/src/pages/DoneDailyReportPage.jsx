@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { getDailyReportByDate } from '../services/api'; // Assuming you have a function to get a report by date
 import { useParams, useNavigate } from 'react-router-dom';
-import CheckCircleIcon from '../components/icons/CheckCircleIcon';
+import CheckCircleIcon from '../assets/icons/CheckCircleIcon';
 import XMarkIcon from '../assets/icons/XMarkIcon';
-import CalendarDaysIcon from '../components/icons/CalendarDaysIcon';
+import CalendarDaysIcon from '../assets/icons/CalendarDaysIcon';
 import NeonSpinner from '../components/NeonSpinner';
 import { useTheme } from '../context/ThemeContext';
-import FlagIcon from '../components/icons/FlagIcon';
+import FlagIcon from '../assets/icons/FlagIcon';
 
 
 // Helper function (can be moved to a utils file if used elsewhere)
